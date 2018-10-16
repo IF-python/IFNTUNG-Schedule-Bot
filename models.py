@@ -27,3 +27,4 @@ class Student(BaseModel):
         return query.exists()
 
 # db.create_tables([Group, Student])
+
