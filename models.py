@@ -17,8 +17,16 @@ class Group(BaseModel):
         return [x.group_code for x in cls.select()]
 
     @classmethod
+    def get_group(cls, group_code):
+        return cls.select().where(cls.group_code == group_code).get()
+
+    @classmethod
     def get_group_full_name(cls, group):
-        return cls.select().where(cls.group_code == group).get().verbose_name
+        return cls.get_group(group).verbose_name
+
+    @classmethod
+    def get_group_by_code(cls, group_code):
+        return cls.get_group(group_code)
 
 
 class Student(BaseModel):
@@ -29,3 +37,9 @@ class Student(BaseModel):
     def has_group(cls, student_id):
         student, created = cls.get_or_create(student_id=student_id)
         return getattr(student.group, 'group_code', None)
+
+    @classmethod
+    def set_group(cls, group_code, student_id):
+        student = cls.get(student_id=student_id)
+        student.group = Group.get_group_by_code(group_code)
+        student.save()
