@@ -16,15 +16,16 @@ class Group(BaseModel):
     def get_all_groups(cls):
         return [x.group_code for x in cls.select()]
 
+    @classmethod
+    def get_group_full_name(cls, group):
+        return cls.select().where(cls.group_code == group).get().verbose_name
+
 
 class Student(BaseModel):
     student_id = peewee.IntegerField()
     group = peewee.ForeignKeyField(Group, backref='students', null=True)
 
     @classmethod
-    def student_exists(cls, student_id):
-        query = cls.select().where(student_id=student_id)
-        return query.exists()
-
-# db.create_tables([Group, Student])
-
+    def has_group(cls, student_id):
+        student, created = cls.get_or_create(student_id=student_id)
+        return getattr(student.group, 'group_code', None)
