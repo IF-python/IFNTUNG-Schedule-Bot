@@ -79,7 +79,7 @@ def cached(func):
         from_cache = r.get(f'schedule::{day}::{group}')
         if not from_cache:
             result = func(day, group)
-            r.set(f'schedule::{day}::{group}', result)
+            r.set(f'schedule::{day}::{group}', result, ex=3600)
             return result
         return from_cache
     return wrapper
