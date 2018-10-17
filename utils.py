@@ -36,6 +36,18 @@ tip_message = 'Відправте команду /date [DATE]. Наприкла�
 group_info = 'Ваша група: {name} ({code})'
 
 
+def from_cache(func):
+    @wraps(func)
+    def wrapper(first, group):
+        schedule = r.get('schedule::{}'.format(group))
+        if not schedule:
+            result = func(first, group)
+            r.set('schedule::{}'.format(group), result, ex=3600)
+            return result
+        return schedule
+    return wrapper
+
+
 def track(user, message):
     try:
         mp.track(str(user), message)
@@ -64,6 +76,7 @@ def group_required(rollback):
     return decorator
 
 
+@from_cache
 def from_string(date, group):
     try:
         current_date = dt.datetime.strptime(date, '%d.%m.%Y')
@@ -73,6 +86,7 @@ def from_string(date, group):
         return 'Хибний формат дати.'
 
 
+@from_cache
 def get_schedule(day, group):
     current_date = dt.datetime.date(dt.datetime.now())
     current_date += dt.timedelta(days=days[day])
