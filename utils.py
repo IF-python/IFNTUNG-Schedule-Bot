@@ -44,6 +44,7 @@ def from_cache(func):
             result = func(first, group)
             r.set('schedule::{}'.format(group), result, ex=3600)
             return result
+        print('from cache')
         return schedule
     return wrapper
 
