@@ -82,6 +82,7 @@ def cached(func):
             r.set(f'schedule::{day}::{group}', result)
             return result
         return from_cache
+    return wrapper
 
 
 @cached
