@@ -40,6 +40,12 @@ class Student(BaseModel):
 
     @classmethod
     def set_group(cls, group_code, student_id):
-        student = cls.get(student_id=student_id)
+        student, created = cls.get_or_create(student_id=student_id)
         student.group = Group.get_group_by_code(group_code)
         student.save()
+
+    @classmethod
+    def get_group_desc(cls, student_id):
+        group = cls.has_group(student_id)
+        if group:
+            return {'code': group, 'name': Group.get_group_full_name(group)}

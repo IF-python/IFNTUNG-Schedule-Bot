@@ -2,12 +2,32 @@ import json
 import redis
 import models
 from functools import wraps
+import re
+import calendar
+import requests
+import datetime as dt
+from lxml import html
+from collections import namedtuple
 
 
-group_not_found_message = 'Групу не здайдено, можливо ви мали на увазі:'
+suggest_message = 'Групу не здайдено, можливо ви мали на увазі:'
+group_not_found = 'Групу не знайдено, спробуйте знову:'
 set_group_message = 'Ви обрали: {} ({})'
 r = redis.from_url('redis://h:p02df5b5926496f4eba7b4986fe5dee4c145002cf670a604d3af2b3a6e427de32@ec2-34-247-96-51.eu-west-1.compute.amazonaws.com:10219')
-# r.delete('groups')
+TIMEOUT = 10000
+default_encoding = 'windows-1251'
+url = 'http://194.44.112.6/cgi-bin/timetable.cgi?n=700'
+CLASS = namedtuple('CLASS', ['from_time', 'to_time', 'rest', 'num'])
+xpath = '//*[@id="wrap"]/div/div/div/div[3]/div[1]/div[1]/table'
+not_found = 'Розклад не знайдений.'
+timestamp_length = 11
+s_time, e_time, rest = slice(1, 6), slice(6, 11), slice(11, None)
+pattern = re.compile(r'\s{3,}')
+response_format = '*(№{}) Початок: {}. Кінець: {}*.\n{}\n\n'
+pretty_format = '*Дата: {}. {} пар(и). {}.*\n\n{}'
+days = {'Сьогодні': 0, 'Завтра': 1}
+tip_message = 'Відправте команду /date [DATE]. Наприклад:\n /date 05.09.2018'
+group_info = 'Ваша група: {name} ({code})'
 
 
 def get_cached_groups():
@@ -29,3 +49,50 @@ def group_required(rollback):
             return rollback(message)
         return wrapper
     return decorator
+
+
+def from_string(date, group):
+    try:
+        current_date = dt.datetime.strptime(date, '%d.%m.%Y')
+        verbose_day = calendar.day_name[current_date.weekday()]
+        return parse(date, verbose_day, group)
+    except ValueError:
+        return 'Хибний формат дати.'
+
+
+def get_schedule(day, group):
+    current_date = dt.datetime.date(dt.datetime.now())
+    current_date += dt.timedelta(days=days[day])
+    return parse(current_date.strftime('%d.%m.%Y'), calendar.day_name[current_date.weekday()], group)
+
+
+def get_raw_content(date, group):
+    payload = {
+        'group': group.encode(default_encoding),
+        'edate': date,
+        'sdate': date
+    }
+    response = requests.post(url, data=payload)
+    response.encoding = default_encoding
+    return response.text
+
+
+def parse(date, verbose_day, group):
+    tree = html.fromstring(get_raw_content(date, group)).xpath(xpath)
+    if tree:
+        content = [i.text_content() for i in tree[0].iterchildren()]
+        return collect_tuples(content, date, verbose_day)
+    return not_found
+
+
+def collect_tuples(data, date, verbose_day):
+    result = []
+    for index, element in enumerate(data, 1):
+        if len(element) > timestamp_length:
+            result.append(CLASS(element[s_time], element[e_time], pattern.sub('\n', element[rest]), index))
+    return make_response(result, date, len(result), verbose_day)
+
+
+def make_response(data, date, count, verbose_day):
+    response = ''.join([response_format.format(x.num, x.from_time, x.to_time, x.rest) for x in data])
+    return pretty_format.format(date, count, verbose_day, response.replace('`', '"'))  # prevent markdown error
