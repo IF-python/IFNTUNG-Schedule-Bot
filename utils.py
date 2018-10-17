@@ -40,7 +40,7 @@ def track(user, message):
     try:
         mp.track(str(user), message)
     except MixpanelException:
-        logger.error('Mxi panel track failed')
+        logger.error('Mix panel track failed')
 
 
 def get_cached_groups():
