@@ -3,6 +3,7 @@ chardet==3.0.4
 et-xmlfile==1.0.1
 idna==2.7
 jdcal==1.4
+lxml==4.2.5
 openpyxl==2.5.8
 peewee==3.7.1
 psycopg2==2.7.5

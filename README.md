@@ -1,1 +1,0 @@
-# IFNTUNG-Schedule-Bot
