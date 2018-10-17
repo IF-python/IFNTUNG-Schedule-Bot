@@ -1,6 +1,13 @@
+import os
 import peewee
+from urllib import parse
 
-db = peewee.SqliteDatabase('TempDB.db')
+url = parse.urlparse(os.environ.get('DATABASE_URL'))
+db = peewee.PostgresqlDatabase(database=url.path[1:],
+                               user=url.username,
+                               password=url.password,
+                               host=url.hostname,
+                               port=url.port)
 
 
 class BaseModel(peewee.Model):
