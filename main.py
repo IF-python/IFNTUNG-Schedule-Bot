@@ -72,16 +72,20 @@ def greeting(message, _):
 @bot.message_handler(func=lambda m: m.text in utils.days)
 @utils.group_required(wait_for_group)
 def send_schedule(message, group):
-    bot.send_message(message.chat.id, text=utils.get_schedule(message.text, group),
+    user = message.from_user.id
+    utils.mp.track(str(user), 'Get schedule')
+    bot.send_message(user, text=utils.get_schedule(message.text, group),
                      reply_to_message_id=message.message_id, parse_mode='Markdown')
 
 
 @bot.message_handler(commands=['date'])
 @utils.group_required(wait_for_group)
 def certain_date(message, group):
+    user = message.from_user.id
+    utils.mp.track(str(user), 'Get schedule')
     splited = message.text.split()
     if len(splited) == 2:
-        bot.send_message(message.chat.id, text=utils.from_string(splited[1], group),
+        bot.send_message(user, text=utils.from_string(splited[1], group),
                          reply_to_message_id=message.message_id, parse_mode='Markdown')
     else:
         bot.reply_to(message, text='Хибний формат команди.')
