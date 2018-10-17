@@ -1,3 +1,4 @@
+import os
 import utils
 import logging
 from time import sleep
@@ -8,7 +9,7 @@ from telebot.apihelper import ApiException
 from telebot.types import ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-bot = TeleBot('677150470:AAGlNtWnU816rtoz2yttYjD4D2KQjNHVhJA')
+bot = TeleBot(os.environ.get('BOT_TOKEN'))
 logging.basicConfig(format=u'%(filename)s[LINE:%(lineno)d]# %(levelname)-2s [%(asctime)s] %(message)s',
                     level=logging.INFO)
 

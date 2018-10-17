@@ -3,6 +3,7 @@ import redis
 import models
 from functools import wraps
 import re
+import os
 import calendar
 import requests
 import datetime as dt
@@ -13,7 +14,7 @@ from collections import namedtuple
 suggest_message = 'Групу не здайдено, можливо ви мали на увазі:'
 group_not_found = 'Групу не знайдено, спробуйте знову:'
 set_group_message = 'Ви обрали: {} ({})'
-r = redis.from_url('redis://h:p02df5b5926496f4eba7b4986fe5dee4c145002cf670a604d3af2b3a6e427de32@ec2-34-247-96-51.eu-west-1.compute.amazonaws.com:10219')
+r = redis.from_url(os.environ.get('REDIS_URL'))
 TIMEOUT = 10000
 default_encoding = 'windows-1251'
 url = 'http://194.44.112.6/cgi-bin/timetable.cgi?n=700'
