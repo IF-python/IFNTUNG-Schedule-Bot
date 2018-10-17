@@ -45,7 +45,7 @@ class Student(BaseModel):
     def get_student(cls, student_id):
         student, created = cls.get_or_create(student_id=student_id)
         if created:
-            utils.mp.track(str(student_id), 'New student')
+            utils.track(str(student_id), 'New student')
         return student, created
 
     @classmethod

@@ -71,22 +71,22 @@ def greeting(message, _):
 @utils.group_required(wait_for_group)
 def send_schedule(message, group):
     user = message.from_user.id
-    utils.track(str(user), 'Get schedule')
     bot.send_message(user, text=utils.get_schedule(message.text, group),
                      reply_to_message_id=message.message_id, parse_mode='Markdown')
+    utils.track(str(user), 'Get schedule')
 
 
 @bot.message_handler(commands=['date'])
 @utils.group_required(wait_for_group)
 def certain_date(message, group):
     user = message.from_user.id
-    utils.track(str(user), 'Get schedule')
     splited = message.text.split()
     if len(splited) == 2:
         bot.send_message(user, text=utils.from_string(splited[1], group),
                          reply_to_message_id=message.message_id, parse_mode='Markdown')
     else:
         bot.reply_to(message, text='Хибний формат команди.')
+    utils.track(str(user), 'Get schedule')
 
 
 @bot.message_handler(regexp='Вказати конкретну дату')
