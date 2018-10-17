@@ -43,6 +43,7 @@ class Student(BaseModel):
     @classmethod
     def has_group(cls, student_id):
         student, created = cls.get_or_create(student_id=student_id)
+        print(created)
         return getattr(student.group, 'group_code', None)
 
     @classmethod

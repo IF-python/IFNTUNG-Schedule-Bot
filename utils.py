@@ -8,8 +8,10 @@ import requests
 import datetime as dt
 from lxml import html
 from functools import wraps
+from mixpanel import Mixpanel
 from collections import namedtuple
 
+mp = Mixpanel(os.environ.get('MIX_TOKEN'))
 suggest_message = 'Групу не здайдено, можливо ви мали на увазі:'
 group_not_found = 'Групу не знайдено, спробуйте знову:'
 set_group_message = 'Ви обрали: {} ({})'

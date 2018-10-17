@@ -20,9 +20,9 @@ def handle_group(message):
     group = message.text.upper()
     all_groups = utils.get_cached_groups()
     if group.upper() in all_groups:
+        utils.r.delete(user)
         Student.set_group(group_code=group, student_id=user)
         group_full = Group.get_group_full_name(group)
-        utils.r.delete(user)
         bot.send_message(user, text=utils.set_group_message.format(group_full, group))
         return send_buttons(message)
     return suggest(message, group, all_groups)
@@ -30,7 +30,7 @@ def handle_group(message):
 
 def get_cancel_button():
     markup = InlineKeyboardMarkup()
-    markup.add(InlineKeyboardButton(text='Віідміна', callback_data='cancel'))
+    markup.add(InlineKeyboardButton(text='Відміна', callback_data='cancel'))
     return markup
 
 
