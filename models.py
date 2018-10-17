@@ -1,4 +1,5 @@
 import os
+import utils
 import peewee
 from urllib import parse
 
@@ -41,14 +42,20 @@ class Student(BaseModel):
     group = peewee.ForeignKeyField(Group, backref='students', null=True)
 
     @classmethod
-    def has_group(cls, student_id):
+    def get_student(cls, student_id):
         student, created = cls.get_or_create(student_id=student_id)
-        print(created)
+        if created:
+            utils.mp.track(str(student_id), 'New student')
+        return student, created
+
+    @classmethod
+    def has_group(cls, student_id):
+        student, created = cls.get_student(student_id)
         return getattr(student.group, 'group_code', None)
 
     @classmethod
     def set_group(cls, group_code, student_id):
-        student, created = cls.get_or_create(student_id=student_id)
+        student, created = cls.get_student(student_id)
         student.group = Group.get_group_by_code(group_code)
         student.save()
 
