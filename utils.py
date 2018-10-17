@@ -47,9 +47,7 @@ def group_required(rollback):
             if group:
                 return func(message, group)
             return rollback(message)
-
         return wrapper
-
     return decorator
 
 
