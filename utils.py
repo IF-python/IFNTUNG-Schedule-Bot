@@ -1,15 +1,14 @@
+import re
+import os
 import json
 import redis
 import models
-from functools import wraps
-import re
-import os
 import calendar
 import requests
 import datetime as dt
 from lxml import html
+from functools import wraps
 from collections import namedtuple
-
 
 suggest_message = 'Групу не здайдено, можливо ви мали на увазі:'
 group_not_found = 'Групу не знайдено, спробуйте знову:'
@@ -48,7 +47,9 @@ def group_required(rollback):
             if group:
                 return func(message, group)
             return rollback(message)
+
         return wrapper
+
     return decorator
 
 
