@@ -1,6 +1,6 @@
 import os
 import utils
-import logging
+
 from time import sleep
 from telebot import TeleBot
 from models import Group, Student
@@ -10,8 +10,6 @@ from telebot.types import ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 bot = TeleBot(os.environ.get('BOT_TOKEN'))
-logging.basicConfig(format=u'%(filename)s[LINE:%(lineno)d]# %(levelname)-2s [%(asctime)s] %(message)s',
-                    level=logging.INFO)
 
 
 @bot.message_handler(func=lambda m: utils.r.get(m.chat.id) == b'set_group')
@@ -120,11 +118,11 @@ def main():
     bot.skip_pending = True
     while True:
         try:
-            logging.info('START POLLING')
+            utils.logger.info('START POLLING')
             bot.polling(none_stop=True, timeout=utils.TIMEOUT)
             break
         except ApiException:
-            logging.error('RESTART POLLING')
+            utils.logger.error('RESTART POLLING')
             sleep(10)
             bot.stop_polling()
 

@@ -3,14 +3,18 @@ import os
 import json
 import redis
 import models
+import logging
 import calendar
 import requests
 import datetime as dt
 from lxml import html
 from functools import wraps
-from mixpanel import Mixpanel
 from collections import namedtuple
+from mixpanel import Mixpanel, MixpanelException
 
+logging.basicConfig(format=u'%(filename)s[LINE:%(lineno)d]# %(levelname)-2s [%(asctime)s] %(message)s',
+                    level=logging.INFO)
+logger = logging.getLogger('worker')
 mp = Mixpanel(os.environ.get('MIX_TOKEN'))
 suggest_message = 'Групу не здайдено, можливо ви мали на увазі:'
 group_not_found = 'Групу не знайдено, спробуйте знову:'
@@ -30,6 +34,13 @@ pretty_format = '*Дата: {}. {} пар(и). {}.*\n\n{}'
 days = {'Сьогодні': 0, 'Завтра': 1}
 tip_message = 'Відправте команду /date [DATE]. Наприклад:\n /date 05.09.2018'
 group_info = 'Ваша група: {name} ({code})'
+
+
+def track(user, message):
+    try:
+        mp.track(str(user), message)
+    except MixpanelException:
+        logger.error('Mxi panel track failed')
 
 
 def get_cached_groups():
