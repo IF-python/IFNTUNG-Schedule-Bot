@@ -67,6 +67,11 @@ def greeting(message, _):
     return send_buttons(message)
 
 
+@bot.message_handler(commands=['stats'])
+def get_stats(message):
+    bot.reply_to(message, text='Users: {}'.format(len(Student.select())))
+
+
 @bot.message_handler(func=lambda m: m.text in utils.days)
 @utils.group_required(wait_for_group)
 def send_schedule(message, group):
