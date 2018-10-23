@@ -44,7 +44,7 @@ def cancel(call):
     if utils.r.get(user):
         utils.r.delete(user)
         bot.answer_callback_query(call.id, text='Відмінено')
-    return bot.edit_message_text(chat_id=user, message_id=call.message.message_id, text='Відмінео')
+    return bot.edit_message_text(chat_id=user, message_id=call.message.message_id, text='Відмінено')
 
 
 @bot.message_handler(commands=['set'])
