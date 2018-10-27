@@ -71,7 +71,7 @@ def greeting(message, _):
 @bot.message_handler(commands=['info'])
 def get_stats(message):
     bot.send_message(message.chat.id, text=utils.info_message.format(len(Student.select())),
-                     parse_mode='Markdown')
+                     parse_mode='Markdown', disable_web_page_preview=True)
 
 
 @bot.message_handler(func=lambda m: m.text in utils.days)
