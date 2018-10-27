@@ -16,7 +16,7 @@ import models
 
 logging.basicConfig(format=u'%(filename)s[LINE:%(lineno)d]# %(levelname)-2s [%(asctime)s] %(message)s',
                     level=logging.INFO)
-logger = logging.getLogger('worker')
+logger = logging.getLogger('worker')  # TODO fix this shit
 mp = Mixpanel(os.environ.get('MIX_TOKEN'))
 suggest_message = 'Групу не здайдено, можливо ви мали на увазі:'
 group_not_found = 'Групу не знайдено, спробуйте знову:'
