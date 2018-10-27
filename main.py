@@ -70,7 +70,8 @@ def greeting(message, _):
 
 @bot.message_handler(commands=['info'])
 def get_stats(message):
-    bot.reply_to(message, text=utils.info_message.format(len(Student.select())))
+    bot.send_message(message.chat.id, text=utils.info_message.format(len(Student.select())),
+                     parse_mode='Markdown')
 
 
 @bot.message_handler(func=lambda m: m.text in utils.days)
