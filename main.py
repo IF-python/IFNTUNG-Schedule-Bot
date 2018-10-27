@@ -68,9 +68,9 @@ def greeting(message, _):
     return send_buttons(message)
 
 
-@bot.message_handler(commands=['stats'])
+@bot.message_handler(commands=['info'])
 def get_stats(message):
-    bot.reply_to(message, text='Users: {}'.format(len(Student.select())))
+    bot.reply_to(message, text=utils.info_message.format(len(Student.select())))
 
 
 @bot.message_handler(func=lambda m: m.text in utils.days)
