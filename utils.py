@@ -1,16 +1,18 @@
-import re
-import os
-import json
-import redis
-import models
-import logging
 import calendar
-import requests
 import datetime as dt
-from lxml import html
-from functools import wraps
+import json
+import logging
+import os
+import re
 from collections import namedtuple
+from functools import wraps
+
+import redis
+import requests
+from lxml import html
 from mixpanel import Mixpanel, MixpanelException
+
+import models
 
 logging.basicConfig(format=u'%(filename)s[LINE:%(lineno)d]# %(levelname)-2s [%(asctime)s] %(message)s',
                     level=logging.INFO)

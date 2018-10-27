@@ -1,7 +1,9 @@
 import os
-import utils
-import peewee
 from urllib import parse
+
+import peewee
+
+import utils
 
 url = parse.urlparse(os.environ.get('DATABASE_URL'))
 db = peewee.PostgresqlDatabase(database=url.path[1:],

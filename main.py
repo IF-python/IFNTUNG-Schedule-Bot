@@ -1,13 +1,14 @@
 import os
-import utils
-
-from time import sleep
-from telebot import TeleBot
-from models import Group, Student
 from difflib import get_close_matches
+from time import sleep
+
+from telebot import TeleBot
 from telebot.apihelper import ApiException
-from telebot.types import ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
+from telebot.types import ReplyKeyboardMarkup, ReplyKeyboardRemove
+
+import utils
+from models import Group, Student
 
 bot = TeleBot(os.environ.get('BOT_TOKEN'))
 
