@@ -78,6 +78,7 @@ def get_stats(message):
 @utils.group_required(wait_for_group)
 def send_schedule(message, group):
     user = message.from_user.id
+    bot.send_chat_action(user, 'typing')
     bot.send_message(user, text=utils.get_schedule(message.text, group),
                      reply_to_message_id=message.message_id, parse_mode='Markdown')
     utils.track(str(user), 'Get schedule')
@@ -88,6 +89,7 @@ def send_schedule(message, group):
 def certain_date(message, group):
     user = message.from_user.id
     splited = message.text.split()
+    bot.send_chat_action(user, 'typing')
     if len(splited) == 2:
         bot.send_message(user, text=utils.from_string(splited[1], group),
                          reply_to_message_id=message.message_id, parse_mode='Markdown')
@@ -123,15 +125,17 @@ def suggest(message, group, groups):
 
 def main():
     bot.skip_pending = True
-    while True:
-        try:
-            utils.logger.info('START POLLING')
-            bot.polling(none_stop=True, timeout=utils.TIMEOUT)
-            break
-        except ApiException:
-            utils.logger.error('RESTART POLLING')
-            sleep(10)
-            bot.stop_polling()
+    utils.logger.info('START POLLING')
+    bot.infinity_polling()
+    # while True:
+    #     try:
+    #         utils.logger.info('START POLLING')
+    #         bot.polling(none_stop=True, timeout=utils.TIMEOUT)
+    #         break
+    #     except ApiException:
+    #         utils.logger.error('RESTART POLLING')
+    #         sleep(10)
+    #         bot.stop_polling()
 
 
 if __name__ == '__main__':
