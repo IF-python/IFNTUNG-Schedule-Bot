@@ -124,7 +124,7 @@ def suggest(message, group, groups):
 def main():
     bot.skip_pending = True
     utils.logger.info('START POLLING')
-    bot.infinity_polling()
+    bot.infinity_polling(timeout=utils.TIMEOUT)
     # while True:
     #     try:
     #         utils.logger.info('START POLLING')
