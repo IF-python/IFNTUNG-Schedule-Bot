@@ -1,7 +1,8 @@
 from time import sleep
 
-from main import bot, ApiException
+from main import bot
 from models import Student
+from telebot.apihelper import ApiException
 
 
 def run_dispatch(message):
