@@ -125,15 +125,6 @@ def main():
     bot.skip_pending = True
     utils.logger.info('START POLLING')
     bot.infinity_polling(timeout=utils.TIMEOUT)
-    # while True:
-    #     try:
-    #         utils.logger.info('START POLLING')
-    #         bot.polling(none_stop=True, timeout=utils.TIMEOUT)
-    #         break
-    #     except ApiException:
-    #         utils.logger.error('RESTART POLLING')
-    #         sleep(10)
-    #         bot.stop_polling()
 
 
 if __name__ == '__main__':
