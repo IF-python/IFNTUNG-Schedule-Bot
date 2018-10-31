@@ -4,6 +4,8 @@ from main import bot
 from models import Student
 from telebot.apihelper import ApiException
 
+TIMEOUT = .4
+
 
 def run_dispatch(message):
     received = 0
@@ -14,5 +16,5 @@ def run_dispatch(message):
             received += 1
         except ApiException:
             pass
-        sleep(0.4)
+        sleep(TIMEOUT)
     return f'{received}/{len(users)}'
