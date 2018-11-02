@@ -61,11 +61,8 @@ def limit_requests(func):
     @wraps(func)
     def decorator(message):
         user_id = message.from_user.id
-        user_request_count = r.get(f'limit::{user_id}')
-        if not user_request_count:
-            r.set(f'limit::{user_id}', 1)
-            return func(message)
-        elif int(user_request_count) < requests_limit_per_day:
+        user_request_count = r.get(f'limit::{user_id}') or 0
+        if int(user_request_count) < requests_limit_per_day:
             r.set(f'limit::{user_id}', int(user_request_count) + 1)
             return func(message)
         track(str(user_id), 'Reached requests limit')
