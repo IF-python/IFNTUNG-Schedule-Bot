@@ -37,6 +37,7 @@ pretty_format = '*Дата: {}. {} пар(и). {}.*\n\n{}'
 days = {'Сьогодні': 0, 'Завтра': 1}
 tip_message = 'Відправте команду /date [DATE]. Наприклад:\n /date 05.09.2018'
 group_info = 'Ваша група: {name} ({code})'
+requests_limit_per_day = 25
 
 
 def track(user, message):
@@ -53,6 +54,32 @@ def get_cached_groups():
         r.set('groups', json.dumps(g))
         return g
     return json.loads(groups)
+
+
+def limit_requests(func):
+    @wraps(func)
+    def decorator(message):
+        user_id = message.from_user.id
+        user_request_count = r.get(f'limit::{user_id}')
+        if not user_request_count:
+            r.set(f'limit::{user_id}', 1)
+            return func(message)
+        elif int(user_request_count) < requests_limit_per_day:
+            r.set(f'limit::{user_id}', int(user_request_count) + 1)
+            return func(message)
+        track(str(user_id), 'Reached requests limit')
+        return decorator
+
+
+def throttle(func):
+    @wraps(func)
+    def decorator(message):
+        user_id = message.from_user.id
+        throttle_value = r.set(f'throttle::{user_id}', ex=2, nx=True)
+        if throttle_value:
+            return func(message)
+        track(str(user_id), 'Throttle')
+    return decorator
 
 
 def group_required(rollback):

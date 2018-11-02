@@ -12,6 +12,7 @@ bot = TeleBot(os.environ.get('BOT_TOKEN'))
 
 
 @bot.message_handler(func=lambda m: utils.r.get(m.chat.id) == b'set_group')
+@utils.throttle
 def handle_group(message):
     user = message.from_user.id
     group = message.text.upper()
@@ -47,11 +48,13 @@ def cancel(call):
 
 
 @bot.message_handler(commands=['set'])
+@utils.throttle
 def set_group_command(message):
     return wait_for_group(message)
 
 
 @bot.message_handler(commands=['get'])
+@utils.throttle
 def get_my_group(message):
     user = message.from_user.id
     desc = Student.get_group_desc(message.chat.id)
@@ -61,18 +64,22 @@ def get_my_group(message):
 
 
 @bot.message_handler(commands=['start'])
+@utils.throttle
 @utils.group_required(wait_for_group)
 def greeting(message, _):
     return send_buttons(message)
 
 
 @bot.message_handler(commands=['info'])
+@utils.throttle
 def get_stats(message):
     bot.send_message(message.chat.id, text=utils.info_message.format(len(Student.select())),
                      parse_mode='Markdown', disable_web_page_preview=True)
 
 
 @bot.message_handler(func=lambda m: m.text in utils.days)
+@utils.throttle
+@utils.limit_requests
 @utils.group_required(wait_for_group)
 def send_schedule(message, group):
     user = message.from_user.id
@@ -83,6 +90,8 @@ def send_schedule(message, group):
 
 
 @bot.message_handler(commands=['date'])
+@utils.throttle
+@utils.limit_requests
 @utils.group_required(wait_for_group)
 def certain_date(message, group):
     user = message.from_user.id
@@ -97,6 +106,7 @@ def certain_date(message, group):
 
 
 @bot.message_handler(regexp='Вказати конкретну дату')
+@utils.throttle
 def send_tip(message):
     bot.reply_to(message, text=utils.tip_message)
 
