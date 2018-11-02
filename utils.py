@@ -68,7 +68,7 @@ def limit_requests(func):
             r.set(f'limit::{user_id}', int(user_request_count) + 1)
             return func(message)
         track(str(user_id), 'Reached requests limit')
-        return decorator
+    return decorator
 
 
 def throttle(func):
