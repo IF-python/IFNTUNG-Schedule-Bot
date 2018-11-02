@@ -40,7 +40,6 @@ tip_message = 'Відправте команду /date [DATE]. Наприкла�
 group_info = 'Ваша група: {name} ({code})'
 requests_limit_per_day = 25
 throttle_time = 2
-seconds = 24 * 3600  # 24 hours
 
 
 def track(user, message):
