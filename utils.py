@@ -39,6 +39,8 @@ days = {'Сьогодні': 0, 'Завтра': 1}
 tip_message = 'Відправте команду /date [DATE]. Наприклад:\n /date 05.09.2018'
 group_info = 'Ваша група: {name} ({code})'
 requests_limit_per_day = 25
+throttle_time = 2
+seconds = 24 * 3600  # 24 hours
 
 
 def track(user, message):
@@ -57,13 +59,19 @@ def get_cached_groups():
     return json.loads(groups)
 
 
+def get_ttl():
+    now = dt.datetime.now()
+    enf_of_the_day = dt.datetime.combine(now, dt.time.max)
+    return int((enf_of_the_day - now).total_seconds())
+
+
 def limit_requests(func):
     @wraps(func)
     def decorator(message):
         user_id = message.from_user.id
         user_request_count = r.get(f'limit::{user_id}') or 0
         if int(user_request_count) < requests_limit_per_day:
-            r.set(f'limit::{user_id}', int(user_request_count) + 1)
+            r.set(f'limit::{user_id}', int(user_request_count) + 1, ex=get_ttl())
             return func(message)
         track(str(user_id), 'Reached requests limit')
     return decorator
