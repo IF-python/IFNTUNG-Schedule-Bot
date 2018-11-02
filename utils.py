@@ -75,7 +75,7 @@ def throttle(func):
     @wraps(func)
     def decorator(message):
         user_id = message.from_user.id
-        throttle_value = r.set(f'throttle::{user_id}', ex=2, nx=True)
+        throttle_value = r.set(f'throttle::{user_id}', True,  ex=2, nx=True)
         if throttle_value:
             return func(message)
         track(str(user_id), 'Throttle')
