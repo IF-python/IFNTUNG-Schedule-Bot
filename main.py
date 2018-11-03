@@ -72,9 +72,10 @@ def greeting(message, _):
 @bot.message_handler(commands=['info'])
 @utils.throttle
 def get_stats(message):
-    bot.send_message(message.chat.id,
-                     text='{}\n\n{}'.format(utils.info_message.format(len(Student.select())), utils.limits_info),
-                     parse_mode='Markdown', disable_web_page_preview=True)
+    user = message.from_user.id
+    requests_count = utils.requests_limit_per_day - utils.get_requests_count(user)
+    bot.send_message(user, parse_mode='Markdown', disable_web_page_preview=True,
+                     text=utils.info_message.format(len(Student.select()), requests_count))
 
 
 @bot.message_handler(func=lambda m: m.text in utils.days)

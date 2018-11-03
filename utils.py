@@ -20,8 +20,11 @@ logger = logging.getLogger('worker')  # TODO fix this shit
 mp = Mixpanel(os.environ.get('MIX_TOKEN'))
 suggest_message = 'Групу не здайдено, можливо ви мали на увазі:'
 group_not_found = 'Групу не знайдено, спробуйте знову:'
-info_message = 'Users: {}\nSource code: [click](https://github.com/P-Alban/IFNTUNG-Schedule-Bot)'
-limits_info = '_Ви можете відправляти 25 запитів розкладу на добу але не частіше ніж раз в 2 секунди._'
+info_message = '''
+Users: {}\nSource code: [click](https://github.com/P-Alban/IFNTUNG-Schedule-Bot)\n\n
+_Ви можете відправляти 25 запитів розкладу на добу але не частіше ніж раз в 2 секунди.\n\n
+_У вас залишилось {}/25 запитів на сьогодні._
+'''
 set_group_message = 'Ви обрали: {} ({})'
 r = redis.from_url(os.environ.get('REDIS_URL'))
 TIMEOUT = 10000
@@ -64,11 +67,15 @@ def get_ttl():
     return int((enf_of_the_day - now).total_seconds())
 
 
+def get_requests_count(user_id):
+    return r.get(f'limit::{user_id}') or 0
+
+
 def limit_requests(func):
     @wraps(func)
     def decorator(message):
         user_id = message.from_user.id
-        user_request_count = r.get(f'limit::{user_id}') or 0
+        user_request_count = get_requests_count(user_id)
         if int(user_request_count) < requests_limit_per_day:
             r.set(f'limit::{user_id}', int(user_request_count) + 1, ex=get_ttl())
             return func(message)
