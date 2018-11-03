@@ -23,7 +23,7 @@ group_not_found = 'Групу не знайдено, спробуйте знов
 info_message = '''
 Users: {}\nSource code: [click](https://github.com/P-Alban/IFNTUNG-Schedule-Bot)\n\n
 _Ви можете відправляти 25 запитів розкладу на добу але не частіше ніж раз в 2 секунди.\n\n
-_У вас залишилось {}/25 запитів на сьогодні._
+У вас залишилось {}/25 запитів на сьогодні._
 '''
 set_group_message = 'Ви обрали: {} ({})'
 r = redis.from_url(os.environ.get('REDIS_URL'))
