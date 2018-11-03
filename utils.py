@@ -21,9 +21,9 @@ mp = Mixpanel(os.environ.get('MIX_TOKEN'))
 suggest_message = 'Групу не здайдено, можливо ви мали на увазі:'
 group_not_found = 'Групу не знайдено, спробуйте знову:'
 info_message = '''
-Users: {}\nSource code: [click](https://github.com/P-Alban/IFNTUNG-Schedule-Bot)\n\n
-_Ви можете відправляти 25 запитів розкладу на добу але не частіше ніж раз в 2 секунди.\n\n
-У вас залишилось {}/25 запитів на сьогодні._
+Users: {}\nSource code: [click](https://github.com/P-Alban/IFNTUNG-Schedule-Bot)\n
+_Ви можете відправляти 25 запитів розкладу на добу але не частіше ніж раз в 2 секунди._\n
+*У вас залишилось {}/25 запитів на сьогодні.*
 '''
 set_group_message = 'Ви обрали: {} ({})'
 r = redis.from_url(os.environ.get('REDIS_URL'))
