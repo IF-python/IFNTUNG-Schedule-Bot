@@ -73,7 +73,7 @@ def greeting(message, _):
 @utils.throttle
 def get_stats(message):
     user = message.from_user.id
-    requests_count = int(utils.requests_limit_per_day - utils.get_requests_count(user))
+    requests_count = utils.requests_limit_per_day - int(utils.get_requests_count(user))
     bot.send_message(user, parse_mode='Markdown', disable_web_page_preview=True,
                      text=utils.info_message.format(len(Student.select()), requests_count))
 
