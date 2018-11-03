@@ -1,7 +1,9 @@
 import os
+import time
 from difflib import get_close_matches
 
 from telebot import TeleBot
+from telebot.apihelper import ApiException
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 from telebot.types import ReplyKeyboardMarkup, ReplyKeyboardRemove
 
@@ -134,8 +136,14 @@ def suggest(message, group, groups):
 
 def main():
     bot.skip_pending = True
-    utils.logger.info('START POLLING')
-    bot.infinity_polling(timeout=utils.TIMEOUT)
+    while True:
+        try:
+            utils.logger.info('START POLLING')
+            bot.polling(none_stop=True, timeout=utils.TIMEOUT)
+        except ApiException:
+            utils.logger.error('RESTARTING POLLING...')
+            bot.stop_polling()
+            time.sleep(10)
 
 
 if __name__ == '__main__':
