@@ -6,6 +6,7 @@ import os
 import re
 from collections import namedtuple
 from functools import wraps
+import threading
 
 import redis
 import requests
@@ -69,6 +70,14 @@ def get_ttl():
 
 def get_requests_count(user_id):
     return r.get(f'limit::{user_id}') or 0
+
+
+def in_thread(func):  # for future
+    @wrap(func)
+    def decorator(message):
+        thread = threading.Thread(target=func, args=(message,))
+        thread.start()
+    return decorator
 
 
 def limit_requests(func):
