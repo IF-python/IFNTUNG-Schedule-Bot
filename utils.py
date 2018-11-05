@@ -73,7 +73,7 @@ def get_requests_count(user_id):
 
 
 def in_thread(func):  # for future
-    @wrap(func)
+    @wraps(func)
     def decorator(message):
         thread = threading.Thread(target=func, args=(message,))
         thread.start()
