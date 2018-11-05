@@ -95,6 +95,7 @@ def send_schedule(message, group):
 @bot.message_handler(commands=['date'])
 @utils.throttle
 @utils.limit_requests
+@utils.in_thread
 @utils.group_required(wait_for_group)
 def certain_date(message, group):
     user = message.from_user.id
