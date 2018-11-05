@@ -72,7 +72,7 @@ def get_requests_count(user_id):
     return r.get(f'limit::{user_id}') or 0
 
 
-def in_thread(func):  # for future
+def in_thread(func):
     @wraps(func)
     def decorator(message):
         thread = threading.Thread(target=func, args=(message,))

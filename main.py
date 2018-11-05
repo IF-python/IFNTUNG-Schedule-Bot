@@ -83,6 +83,7 @@ def get_stats(message):
 @bot.message_handler(func=lambda m: m.text in utils.days)
 @utils.throttle
 @utils.limit_requests
+@utils.in_thread
 @utils.group_required(wait_for_group)
 def send_schedule(message, group):
     user = message.from_user.id
