@@ -14,7 +14,7 @@ bot = TeleBot(os.environ.get('BOT_TOKEN'))
 
 
 @bot.message_handler(func=lambda m: utils.r.get(m.chat.id) == b'set_group')
-@utils.throttle
+@utils.throttle(time=1)
 def handle_group(message):
     user = message.from_user.id
     group = message.text.upper()

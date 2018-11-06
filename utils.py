@@ -92,14 +92,16 @@ def limit_requests(func):
     return decorator
 
 
-def throttle(func):
-    @wraps(func)
-    def decorator(message):
-        user_id = message.from_user.id
-        throttle_value = r.set(f'throttle::{user_id}', True,  ex=2, nx=True)
-        if throttle_value:
-            return func(message)
-        track(str(user_id), 'Throttle')
+def throttle(time=2):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(message):
+            user_id = message.from_user.id
+            throttle_value = r.set(f'throttle::{user_id}', True,  ex=time, nx=True)
+            if throttle_value:
+                return func(message)
+            track(str(user_id), 'Throttle')
+        return wrapper
     return decorator
 
 
