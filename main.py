@@ -56,7 +56,7 @@ def set_group_command(message):
 @bot.message_handler(commands=['get'])
 @utils.throttle()
 @utils.group_required(wait_for_group)
-def get_my_group(message, _, _):
+def get_my_group(message, *args):
     user = message.from_user.id
     desc = Student.get_group_desc(message.chat.id)
     return bot.send_message(user, text=utils.group_info.format(**desc))
@@ -65,7 +65,7 @@ def get_my_group(message, _, _):
 @bot.message_handler(commands=['start'])
 @utils.throttle()
 @utils.group_required(wait_for_group)
-def greeting(message, _, _):
+def greeting(message, *args):
     return send_buttons(message)
 
 
