@@ -109,7 +109,7 @@ def certain_date(message, group):
 
 
 @bot.message_handler(regexp='Вказати конкретну дату')
-@utils.throttle
+@utils.throttle()
 def send_tip(message):
     bot.reply_to(message, text=utils.tip_message)
 
