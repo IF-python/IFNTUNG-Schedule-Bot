@@ -42,9 +42,7 @@ def wait_for_group(message):
 @bot.callback_query_handler(func=lambda call: call.data == 'cancel')
 def cancel(call):
     user = call.from_user.id
-    if utils.r.get(user):
-        utils.r.delete(user)
-        bot.answer_callback_query(call.id, text='Відмінено')
+    utils.r.delete(user)
     return bot.edit_message_text(chat_id=user, message_id=call.message.message_id, text='Відмінено')
 
 
