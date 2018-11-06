@@ -48,13 +48,13 @@ def cancel(call):
 
 
 @bot.message_handler(commands=['set'])
-@utils.throttle
+@utils.throttle()
 def set_group_command(message):
     return wait_for_group(message)
 
 
 @bot.message_handler(commands=['get'])
-@utils.throttle
+@utils.throttle()
 @utils.group_required(wait_for_group)
 def get_my_group(message, _):
     user = message.from_user.id
@@ -63,14 +63,14 @@ def get_my_group(message, _):
 
 
 @bot.message_handler(commands=['start'])
-@utils.throttle
+@utils.throttle()
 @utils.group_required(wait_for_group)
 def greeting(message, _):
     return send_buttons(message)
 
 
 @bot.message_handler(commands=['info'])
-@utils.throttle
+@utils.throttle()
 def get_stats(message):
     user = message.from_user.id
     requests_count = utils.requests_limit_per_day - int(utils.get_requests_count(user))
@@ -79,7 +79,7 @@ def get_stats(message):
 
 
 @bot.message_handler(func=lambda m: m.text in utils.days)
-@utils.throttle
+@utils.throttle()
 @utils.limit_requests
 @utils.in_thread
 @utils.group_required(wait_for_group)
@@ -92,7 +92,7 @@ def send_schedule(message, group):
 
 
 @bot.message_handler(commands=['date'])
-@utils.throttle
+@utils.throttle()
 @utils.limit_requests
 @utils.in_thread
 @utils.group_required(wait_for_group)
