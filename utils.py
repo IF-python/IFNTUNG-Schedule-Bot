@@ -109,9 +109,10 @@ def group_required(rollback):
     def decorator(func):
         @wraps(func)
         def wrapper(message):
-            group = models.Student.has_group(message.from_user.id)
+            user = message.from_user.id
+            group = models.Student.has_group(user)
             if group:
-                return func(message, group)
+                return func(message, user, group)
             return rollback(message)
         return wrapper
     return decorator

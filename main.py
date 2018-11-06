@@ -56,7 +56,7 @@ def set_group_command(message):
 @bot.message_handler(commands=['get'])
 @utils.throttle()
 @utils.group_required(wait_for_group)
-def get_my_group(message, _):
+def get_my_group(message, _, _):
     user = message.from_user.id
     desc = Student.get_group_desc(message.chat.id)
     return bot.send_message(user, text=utils.group_info.format(**desc))
@@ -65,7 +65,7 @@ def get_my_group(message, _):
 @bot.message_handler(commands=['start'])
 @utils.throttle()
 @utils.group_required(wait_for_group)
-def greeting(message, _):
+def greeting(message, _, _):
     return send_buttons(message)
 
 
@@ -83,8 +83,7 @@ def get_stats(message):
 @utils.limit_requests
 @utils.in_thread
 @utils.group_required(wait_for_group)
-def send_schedule(message, group):
-    user = message.from_user.id
+def send_schedule(message, user, group):
     bot.send_message(user, text=utils.get_schedule(message.text, group, bot, user),
                      reply_to_message_id=message.message_id, parse_mode='Markdown')
     utils.track(str(user), 'Get schedule')
@@ -95,8 +94,7 @@ def send_schedule(message, group):
 @utils.limit_requests
 @utils.in_thread
 @utils.group_required(wait_for_group)
-def certain_date(message, group):
-    user = message.from_user.id
+def certain_date(message, user, group):
     splited = message.text.split()
     bot.send_chat_action(user, 'typing')
     if len(splited) == 2:
