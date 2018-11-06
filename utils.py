@@ -131,7 +131,7 @@ def cached(func):
     def wrapper(day, group, bot, user):
         from_cache = r.get(f'schedule::{day}::{group}')
         if not from_cache:
-            bot.send_action(user, 'typing')
+            bot.send_chat_action(user, 'typing')
             result = func(day, group)
             r.set(f'schedule::{day}::{group}', result, ex=3600)
             return result
