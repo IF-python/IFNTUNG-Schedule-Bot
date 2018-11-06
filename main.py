@@ -54,12 +54,11 @@ def set_group_command(message):
 
 @bot.message_handler(commands=['get'])
 @utils.throttle
-def get_my_group(message):
+@utils.group_required(wait_for_group)
+def get_my_group(message, _):
     user = message.from_user.id
     desc = Student.get_group_desc(message.chat.id)
-    if desc:
-        return bot.send_message(user, text=utils.group_info.format(**desc))
-    return wait_for_group(message)
+    return bot.send_message(user, text=utils.group_info.format(**desc))
 
 
 @bot.message_handler(commands=['start'])

@@ -64,5 +64,4 @@ class Student(BaseModel):
     @classmethod
     def get_group_desc(cls, student_id):
         group = cls.has_group(student_id)
-        if group:
-            return {'code': group, 'name': Group.get_group_full_name(group)}
+        return {'code': group, 'name': Group.get_group_full_name(group)}
