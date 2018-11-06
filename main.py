@@ -85,8 +85,8 @@ def get_stats(message):
 @utils.group_required(wait_for_group)
 def send_schedule(message, group):
     user = message.from_user.id
-    bot.send_chat_action(user, 'typing')
-    bot.send_message(user, text=utils.get_schedule(message.text, group),
+    # bot.send_chat_action(user, 'typing')
+    bot.send_message(user, text=utils.get_schedule(message.text, group, bot, user),
                      reply_to_message_id=message.message_id, parse_mode='Markdown')
     utils.track(str(user), 'Get schedule')
 

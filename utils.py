@@ -128,9 +128,10 @@ def from_string(date, group):
 
 def cached(func):
     @wraps(func)
-    def wrapper(day, group):
+    def wrapper(day, group, bot, user):
         from_cache = r.get(f'schedule::{day}::{group}')
         if not from_cache:
+            bot.send_action(user, 'typing')
             result = func(day, group)
             r.set(f'schedule::{day}::{group}', result, ex=3600)
             return result
@@ -139,7 +140,7 @@ def cached(func):
 
 
 @cached
-def get_schedule(day, group):
+def get_schedule(day, group, bot=None, user=None):
     current_date = dt.datetime.date(dt.datetime.now())
     current_date += dt.timedelta(days=days[day])
     return parse(current_date.strftime('%d.%m.%Y'), calendar.day_name[current_date.weekday()], group)
