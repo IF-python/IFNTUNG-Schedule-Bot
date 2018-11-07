@@ -25,6 +25,7 @@ info_message = '''
 Users: {}\nSource code: [click](https://github.com/P-Alban/IFNTUNG-Schedule-Bot)\n
 _Ви можете відправляти 25 запитів розкладу на добу але не частіше ніж раз в 2 секунди._\n
 *У вас залишилось {}/25 запитів на сьогодні.*
+`will be updated at 00:00 (UTC)`
 '''
 set_group_message = 'Ви обрали: {} ({})'
 r = redis.from_url(os.environ.get('REDIS_URL'))
