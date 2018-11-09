@@ -2,49 +2,26 @@ import calendar
 import datetime as dt
 import json
 import logging
-import os
 import re
+import threading
 from collections import namedtuple
 from functools import wraps
-import threading
 
-import redis
 import requests
 from lxml import html
-from mixpanel import Mixpanel, MixpanelException
+from mixpanel import MixpanelException
 
 import models
+from config import *
+from templates import *
 
 logging.basicConfig(format=u'%(filename)s[LINE:%(lineno)d]# %(levelname)-2s [%(asctime)s] %(message)s',
                     level=logging.INFO)
 logger = logging.getLogger('worker')  # TODO fix this shit
-mp = Mixpanel(os.environ.get('MIX_TOKEN'))
-suggest_message = 'Групу не здайдено, можливо ви мали на увазі:'
-group_not_found = 'Групу не знайдено, спробуйте знову:'
-info_message = '''
-Users: {}\nSource code: [click](https://github.com/P-Alban/IFNTUNG-Schedule-Bot)\n
-_Ви можете відправляти 25 запитів розкладу на добу але не частіше ніж раз в 2 секунди._\n
-*У вас залишилось {}/25 запитів на сьогодні.*
-`will be updated at 00:00 (UTC)`
-'''
-set_group_message = 'Ви обрали: {} ({})'
-r = redis.from_url(os.environ.get('REDIS_URL'))
-TIMEOUT = 10000
-default_encoding = 'windows-1251'
-url = 'http://194.44.112.6/cgi-bin/timetable.cgi?n=700'
 CLASS = namedtuple('CLASS', ['from_time', 'to_time', 'rest', 'num'])
 xpath = '//*[@id="wrap"]/div/div/div/div[3]/div[1]/div[1]/table'
-not_found = 'Розклад не знайдений.'
-timestamp_length = 11
 s_time, e_time, rest = slice(1, 6), slice(6, 11), slice(11, None)
 pattern = re.compile(r'\s{3,}')
-response_format = '*(№{}) Початок: {}. Кінець: {}*.\n{}\n\n'
-pretty_format = '*Дата: {}. {} пар(и). {}.*\n\n{}'
-days = {'Сьогодні': 0, 'Завтра': 1}
-tip_message = 'Відправте команду /date [DATE]. Наприклад:\n /date 05.09.2018'
-group_info = 'Ваша група: {name} ({code})'
-requests_limit_per_day = 25
-throttle_time = 2
 
 
 def track(user, message):
@@ -93,7 +70,7 @@ def limit_requests(func):
     return decorator
 
 
-def throttle(time=2):
+def throttle(time=throttle_time):
     def decorator(func):
         @wraps(func)
         def wrapper(message):
