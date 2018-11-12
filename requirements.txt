@@ -9,6 +9,7 @@ openpyxl==2.5.8
 peewee==3.7.1
 psycopg2==2.7.5
 pyTelegramBotAPI==3.6.6
+pytz==2018.7
 redis==2.10.6
 requests==2.19.1
 six==1.11.0

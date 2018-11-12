@@ -1,10 +1,12 @@
 import os
 
+import pytz
 import redis
 from mixpanel import Mixpanel
 
 TIMEOUT = 10000
-CACHE_TIME = 3600  # 1 hour
+CACHE_TIME = 3600 * 2  # 1 hour
+TIME_ZONE = pytz.timezone('Europe/Kiev')
 default_encoding = 'windows-1251'
 url = 'http://194.44.112.6/cgi-bin/timetable.cgi?n=700'
 timestamp_length = 11

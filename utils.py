@@ -41,9 +41,16 @@ def get_cached_groups():
 
 
 def get_ttl():
-    now = dt.datetime.now()
-    enf_of_the_day = dt.datetime.combine(now, dt.time.max)
-    return int((enf_of_the_day - now).total_seconds())
+    now = dt.datetime.now().replace(tzinfo=TIME_ZONE)
+    enf_of_the_day = TIME_ZONE.localize(dt.datetime.combine(now, dt.time.max))
+    return (enf_of_the_day - now).total_seconds()
+
+
+def get_cache_time():
+    ttl = get_ttl()
+    if ttl < CACHE_TIME:
+        return ttl
+    return CACHE_TIME
 
 
 def get_requests_count(user_id):
@@ -112,7 +119,7 @@ def cached(func):
         if not from_cache:
             bot.send_chat_action(user, 'typing')
             result = func(day, group)
-            r.set(f'schedule::{day}::{group}', result, ex=CACHE_TIME)
+            r.set(f'schedule::{day}::{group}', result, ex=get_cache_time())
             return result
         return from_cache
     return wrapper
