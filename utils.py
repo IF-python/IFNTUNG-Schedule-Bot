@@ -43,7 +43,7 @@ def get_cached_groups():
 def get_ttl():
     now = dt.datetime.now().replace(tzinfo=TIME_ZONE)
     enf_of_the_day = TIME_ZONE.localize(dt.datetime.combine(now, dt.time.max))
-    return (enf_of_the_day - now).total_seconds()
+    return int((enf_of_the_day - now).total_seconds())
 
 
 def get_cache_time():
