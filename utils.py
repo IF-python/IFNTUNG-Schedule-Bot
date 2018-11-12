@@ -48,9 +48,7 @@ def get_ttl():
 
 def get_cache_time():
     ttl = get_ttl()
-    if ttl < CACHE_TIME:
-        return ttl
-    return CACHE_TIME
+    return ttl if ttl < CACHE_TIME else CACHE_TIME
 
 
 def get_requests_count(user_id):
