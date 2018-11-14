@@ -42,6 +42,7 @@ class Group(BaseModel):
 class Student(BaseModel):
     student_id = peewee.IntegerField()
     group = peewee.ForeignKeyField(Group, backref='students', null=True)
+    extend = peewee.BooleanField(default=True)
 
     @classmethod
     def get_student(cls, student_id):
