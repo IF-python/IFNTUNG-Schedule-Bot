@@ -42,10 +42,12 @@ class Group(BaseModel):
 class Student(BaseModel):
     student_id = peewee.IntegerField()
     group = peewee.ForeignKeyField(Group, backref='students', null=True)
+    extend = peewee.BooleanField(default=True)
 
     @classmethod
     def get_student(cls, student_id):
         student, created = cls.get_or_create(student_id=student_id)
+        print(student.extend)
         if created:
             utils.track(str(student_id), 'New student')
         return student, created
