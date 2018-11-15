@@ -52,6 +52,11 @@ class Student(BaseModel):
         return student, created
 
     @classmethod
+    def get_extend_flag(cls, user_id):
+        student, created = cls.get_student(user_id)
+        return student.extend
+
+    @classmethod
     def has_group(cls, student_id):
         student, created = cls.get_student(student_id)
         return getattr(student.group, 'group_code', None)
