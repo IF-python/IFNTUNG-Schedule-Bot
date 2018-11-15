@@ -15,3 +15,4 @@ requests_limit_per_day = 25
 throttle_time = 2
 mp = Mixpanel(os.environ.get('MIX_TOKEN'))
 r = redis.from_url(os.environ.get('REDIS_URL'))
+flag_message = 'Військова підготовка'

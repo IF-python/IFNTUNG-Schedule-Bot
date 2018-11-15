@@ -42,7 +42,7 @@ class Group(BaseModel):
 class Student(BaseModel):
     student_id = peewee.IntegerField()
     group = peewee.ForeignKeyField(Group, backref='students', null=True)
-    extend = peewee.BooleanField(default=True)
+    extend = peewee.BooleanField(default=False)
 
     @classmethod
     def get_student(cls, student_id):
@@ -55,6 +55,12 @@ class Student(BaseModel):
     def get_extend_flag(cls, user_id):
         student, created = cls.get_student(user_id)
         return student.extend
+
+    @classmethod
+    def reset_extended_flag(cls, user_id):
+        student, created = cls.get_student(user_id)
+        student.extend = not student.extend
+        student.save()
 
     @classmethod
     def has_group(cls, student_id):

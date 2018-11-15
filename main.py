@@ -9,6 +9,7 @@ from telebot.types import ReplyKeyboardMarkup, ReplyKeyboardRemove
 
 import utils
 from models import Group, Student
+from templates import chair_info
 
 bot = TeleBot(os.environ.get('BOT_TOKEN'))
 
@@ -62,6 +63,42 @@ def get_my_group(message, *args):
     return bot.send_message(user, text=utils.group_info.format(**desc))
 
 
+def get_chair_status_message(user):
+    current_state = Student.get_extend_flag(user)
+    return chair_info.format(current_state)
+
+
+def settings_buttons():
+    markup = InlineKeyboardMarkup()
+    markup.add(InlineKeyboardButton(text='Змінити', callback_data='change_chair'),
+               InlineKeyboardButton(text='✖️', callback_data='close'))
+    return markup
+
+
+@bot.message_handler(commands=['chair'])
+@utils.throttle()
+@utils.group_required(wait_for_group)
+def get_change_chair_dialog(message, *args):
+    user = message.from_user.id
+    bot.send_message(user, text=get_chair_status_message(user),
+                     reply_markup=settings_buttons(), parse_mode='Markdown')
+
+
+@bot.callback_query_handler(func=lambda call: call.data == 'change_chair')
+def reset_chair_status(call):
+    user = call.from_user.id
+    Student.reset_extended_flag(user)
+    bot.edit_message_text(chat_id=user, message_id=call.message.message_id,
+                          text=get_chair_status_message(user), parse_mode='Markdown',
+                          reply_markup=settings_buttons())
+
+
+@bot.callback_query_handler(func=lambda call: call.data == 'close')
+def close_chair_dialog(call):
+    user = call.from_user.id
+    bot.edit_message_text(chat_id=user, message_id=call.message.message_id, text=':)')
+
+
 @bot.message_handler(commands=['start'])
 @utils.throttle()
 @utils.group_required(wait_for_group)
@@ -84,7 +121,8 @@ def get_stats(message):
 @utils.in_thread
 @utils.group_required(wait_for_group)
 def send_schedule(message, user, group):
-    bot.send_message(user, text=utils.get_schedule(message.text, group, bot, user),
+    extended_flag = Student.get_extend_flag(user)
+    bot.send_message(user, text=utils.get_schedule(message.text, group, bot, user, extended_flag),
                      reply_to_message_id=message.message_id, parse_mode='Markdown')
     utils.track(str(user), 'Get schedule')
 
@@ -97,8 +135,9 @@ def send_schedule(message, user, group):
 def certain_date(message, user, group):
     splited = message.text.split()
     bot.send_chat_action(user, 'typing')
+    extended_flag = Student.get_extend_flag(user)
     if len(splited) == 2:
-        bot.send_message(user, text=utils.from_string(splited[1], group),
+        bot.send_message(user, text=utils.from_string(splited[1], group, extended_flag),
                          reply_to_message_id=message.message_id, parse_mode='Markdown')
     else:
         bot.reply_to(message, text='Хибний формат команди.')
@@ -115,7 +154,7 @@ def send_buttons(message):
     markup = ReplyKeyboardMarkup(resize_keyboard=True)
     markup.add(*utils.days)
     markup.add('Вказати конкретну дату')
-    bot.send_message(message.from_user.id, text='Меню', reply_markup=markup)
+    bot.send_message(message.from_user.id, text='Меню', reply_markup=markup, parse_mode='Markdown')
 
 
 def suggest(message, group, groups):
