@@ -153,6 +153,7 @@ def collect_tuples(data, date, verbose_day):
     result = []
     for index, element in enumerate(data, 1):
         if len(element) > timestamp_length:
+            print(element[rest])
             result.append(CLASS(element[s_time], element[e_time], pattern.sub('\n', element[rest]), index))
     return make_response(result, date, len(result), verbose_day)
 
