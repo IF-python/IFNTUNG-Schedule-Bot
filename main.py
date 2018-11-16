@@ -24,7 +24,8 @@ def handle_group(message):
         utils.r.delete(user)
         Student.set_group(group_code=group, student_id=user)
         group_full = Group.get_group_full_name(group)
-        bot.send_message(user, text=utils.set_group_message.format(group_full, group))
+        bot.send_message(user, text=utils.set_group_message.format(group_full, group),
+                         parse_mode='Markdown')
         return send_buttons(message)
     return suggest(message, group, all_groups)
 
@@ -154,7 +155,7 @@ def send_buttons(message):
     markup = ReplyKeyboardMarkup(resize_keyboard=True)
     markup.add(*utils.days)
     markup.add('Вказати конкретну дату')
-    bot.send_message(message.from_user.id, text='Меню', reply_markup=markup, parse_mode='Markdown')
+    bot.send_message(message.from_user.id, text='Меню', reply_markup=markup)
 
 
 def suggest(message, group, groups):
