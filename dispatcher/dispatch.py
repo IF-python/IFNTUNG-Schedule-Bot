@@ -1,8 +1,9 @@
 from time import sleep
 
+from telebot.apihelper import ApiException
+
 from main import bot
 from models import Student
-from telebot.apihelper import ApiException
 
 TIMEOUT = .4
 
