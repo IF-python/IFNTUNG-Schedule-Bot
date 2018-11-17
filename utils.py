@@ -170,22 +170,14 @@ def switcher(flag_value):
     return with_extended_flag if flag_value else without_extended_flag
 
 
-def endure(from_time, to_time):
-    now_dt = dt.datetime.now(TIME_ZONE).replace(microsecond=0)
-    f_dt = TIME_ZONE.localize(dt.datetime.combine(now_dt.date(), dt.datetime.strptime(from_time, '%H:%M').time()))
-    t_dt = TIME_ZONE.localize(dt.datetime.combine(now_dt.date(), dt.datetime.strptime(to_time, '%H:%M').time()))
-    if f_dt <= now_dt <= t_dt:
-        return endure_message.format(str(t_dt - now_dt))
-    return ''
-
-
 def collect_tuples(data, date, verbose_day, flag):
     result = []
     filter_function = switcher(flag)
     for element in filter_function(data):
         if len(element.data) > timestamp_length:
-            f, t = element.data[s_time], element.data[e_time]
-            result.append(CLASS(f, t, pattern.sub('\n', element.rest) + endure(f, t),
+            result.append(CLASS(element.data[s_time],
+                                element.data[e_time],
+                                pattern.sub('\n', element.rest),
                                 element.index))
     return make_response(result, date, len(result), verbose_day)
 
