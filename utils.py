@@ -22,7 +22,7 @@ CLASS = namedtuple('CLASS', ['from_time', 'to_time', 'rest', 'num'])
 filtered = namedtuple('Filtered', ['index', 'rest', 'data'])
 xpath = '//*[@id="wrap"]/div/div/div/div[3]/div[1]/div[1]/table'
 s_time, e_time, rest = slice(1, 6), slice(6, 11), slice(11, None)
-pattern = re.compile(r'\s{2,}')
+pattern = re.compile(r'\s{3,}')
 
 
 def track(user, message):
