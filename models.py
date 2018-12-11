@@ -77,3 +77,6 @@ class Student(BaseModel):
     def get_group_desc(cls, student_id):
         group = cls.has_group(student_id)
         return {'code': group, 'name': Group.get_group_full_name(group)}
+
+
+db.create_tables([Group, Student], safe=True)
