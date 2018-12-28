@@ -17,7 +17,7 @@ def receive_update():
 @server.route("/")
 def web_hook():
     bot.remove_webhook()
-    bot.set_webhook(url='https://your_heroku_project.com/' + token)
+    bot.set_webhook(url='https://ifntungskedbot.herokuapp.com/' + token)
     return "RESET WEB HOOK", 200
 
 
