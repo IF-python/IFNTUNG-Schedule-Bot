@@ -170,18 +170,3 @@ def suggest(message, group, groups):
                             text=utils.group_not_found,
                             reply_markup=ReplyKeyboardRemove())
 
-
-# def main():
-#     bot.skip_pending = True
-#     while True:
-#         try:
-#             utils.logger.info('START POLLING')
-#             bot.polling(none_stop=True, timeout=utils.TIMEOUT)
-#         except ApiException:
-#             utils.logger.error('RESTARTING POLLING...')
-#             bot.stop_polling()
-#             time.sleep(10)
-#
-#
-# if __name__ == '__main__':
-#     main()
