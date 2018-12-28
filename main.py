@@ -11,7 +11,8 @@ import utils
 from models import Group, Student
 from templates import chair_info
 
-bot = TeleBot(os.environ.get('BOT_TOKEN'))
+token = os.environ.get('BOT_TOKEN')
+bot = TeleBot(token)
 
 
 @bot.message_handler(func=lambda m: utils.r.get(m.chat.id) == b'set_group')
@@ -170,17 +171,17 @@ def suggest(message, group, groups):
                             reply_markup=ReplyKeyboardRemove())
 
 
-def main():
-    bot.skip_pending = True
-    while True:
-        try:
-            utils.logger.info('START POLLING')
-            bot.polling(none_stop=True, timeout=utils.TIMEOUT)
-        except ApiException:
-            utils.logger.error('RESTARTING POLLING...')
-            bot.stop_polling()
-            time.sleep(10)
-
-
-if __name__ == '__main__':
-    main()
+# def main():
+#     bot.skip_pending = True
+#     while True:
+#         try:
+#             utils.logger.info('START POLLING')
+#             bot.polling(none_stop=True, timeout=utils.TIMEOUT)
+#         except ApiException:
+#             utils.logger.error('RESTARTING POLLING...')
+#             bot.stop_polling()
+#             time.sleep(10)
+#
+#
+# if __name__ == '__main__':
+#     main()
