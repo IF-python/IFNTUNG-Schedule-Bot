@@ -1,10 +1,18 @@
+beautifulsoup4==4.6.3
+bs4==0.0.1
 certifi==2018.10.15
 chardet==3.0.4
+Click==7.0
 et-xmlfile==1.0.1
+Flask==1.0.2
 idna==2.7
+itsdangerous==1.1.0
 jdcal==1.4
+Jinja2==2.10
 lxml==4.2.5
+MarkupSafe==1.1.0
 mixpanel==4.3.2
+numpy==1.15.4
 openpyxl==2.5.8
 peewee==3.7.1
 psycopg2==2.7.5
@@ -14,3 +22,4 @@ redis==2.10.6
 requests==2.19.1
 six==1.11.0
 urllib3==1.23
+Werkzeug==0.14.1
