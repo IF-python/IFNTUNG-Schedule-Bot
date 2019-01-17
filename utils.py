@@ -61,6 +61,7 @@ def in_thread(func):
     def decorator(message):
         thread = threading.Thread(target=func, args=(message,))
         thread.start()
+
     return decorator
 
 
@@ -73,6 +74,7 @@ def limit_requests(func):
             r.set(f'limit::{user_id}', int(user_request_count) + 1, ex=get_ttl())
             return func(message)
         track(str(user_id), 'Reached requests limit')
+
     return decorator
 
 
@@ -81,11 +83,13 @@ def throttle(time=throttle_time):
         @wraps(func)
         def wrapper(message):
             user_id = message.from_user.id
-            throttle_value = r.set(f'throttle::{user_id}', True,  ex=time, nx=True)
+            throttle_value = r.set(f'throttle::{user_id}', True, ex=time, nx=True)
             if throttle_value:
                 return func(message)
             track(str(user_id), 'Throttle')
+
         return wrapper
+
     return decorator
 
 
@@ -98,7 +102,9 @@ def group_required(rollback):
             if group:
                 return func(message, user, group)
             return rollback(message)
+
         return wrapper
+
     return decorator
 
 
@@ -122,6 +128,7 @@ def cached(func):
                   result, ex=get_cache_time())
             return result
         return from_cache
+
     return wrapper
 
 
