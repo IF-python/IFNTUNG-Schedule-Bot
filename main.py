@@ -1,9 +1,7 @@
 import os
-import time
 from difflib import get_close_matches
 
 from telebot import TeleBot
-from telebot.apihelper import ApiException
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 from telebot.types import ReplyKeyboardMarkup, ReplyKeyboardRemove
 
