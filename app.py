@@ -5,17 +5,17 @@ from flask import Flask, request
 
 from main import bot, token
 
-server = Flask(__name__)
+app = Flask(__name__)
 secret = os.environ.get('SECRET')
 
 
-@server.route('/' + token, methods=['POST'])
+@app.route('/' + token, methods=['POST'])
 def receive_update():
     bot.process_new_updates([telebot.types.Update.de_json(request.stream.read().decode("utf-8"))])
     return "!", 200
 
 
-@server.route("/" + secret)
+@app.route("/" + secret)
 def web_hook():
     bot.remove_webhook()
     bot.set_webhook(url='https://ifntungskedbot.herokuapp.com/' + token)
@@ -23,4 +23,4 @@ def web_hook():
 
 
 if __name__ == "__main__":
-    server.run(host="0.0.0.0", port=os.environ.get('PORT', 5000))
+    app.run(host="0.0.0.0", port=os.environ.get('PORT', 5000))
