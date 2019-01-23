@@ -5,10 +5,11 @@ from time import sleep
 from celery import Celery
 from celery.schedules import crontab
 from peewee import Proxy
+from playhouse.db_url import connect
 
 from config import TIME_ZONE
 from main import bot
-from models import Student, db
+from models import Student
 from utils import get_schedule
 
 app = Celery('notifications', broker=os.environ.get('REDIS_URL'))
@@ -26,6 +27,7 @@ def notify(group, user_id, flag):
 
 @app.task
 def main():
+    db = connect(os.environ.get('DATABASE_URL'))
     database_proxy = Proxy()
     database_proxy.initialize(db)
     current_time = TIME_ZONE.localize(datetime.datetime.now()).time().replace(second=0, microsecond=0)
