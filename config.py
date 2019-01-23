@@ -16,4 +16,4 @@ throttle_time = 2
 mp = Mixpanel(os.environ.get('MIX_TOKEN'))
 r = redis.from_url(os.environ.get('REDIS_URL'))
 flag_message = 'Військова підготовка'
-
+default_time_set = ['6:00', '6:15', '6:30', '6:45', '7:00', '7:15', '7:30', '7:45', '8:00']

@@ -7,7 +7,8 @@ from telebot.types import ReplyKeyboardMarkup, ReplyKeyboardRemove
 
 import utils
 from models import Group, Student
-from templates import chair_info, notify_template
+from templates import chair_info, notify_template, time_menu_template
+from config import default_time_set
 
 token = os.environ.get('BOT_TOKEN')
 bot = TeleBot(token)
@@ -68,10 +69,25 @@ def create_notify_keyboard(user):
     turn = 'Увімкнути' if not user_notify_status else 'Вимкнути'
     notify_status_btn = InlineKeyboardButton(text=turn, callback_data='change_notify_status')
     set_time_btn = InlineKeyboardButton(text='Встановити час', callback_data='set_time')
-    close_btn = InlineKeyboardButton(text='✖️', callback_data='close')
+    close_btn = InlineKeyboardButton(text='Закрити', callback_data='close')
     keyboard.add(notify_status_btn, set_time_btn)
     keyboard.add(close_btn)
     return keyboard
+
+
+def create_time_buttons():
+    keyboard = InlineKeyboardMarkup()
+    keyboard.add(*[InlineKeyboardButton(text=time, callback_data=f'time_{time}')
+                   for time in default_time_set])
+    return keyboard
+
+
+@bot.callback_query_handler(func=lambda call: call.data == 'set_time')
+def set_notify_time_menu(call):
+    bot.edit_message_text(message_id=call.message.message_id,
+                          chat_id=call.from_user.id,
+                          reply_markup=create_time_buttons(),
+                          text=time_menu_template)
 
 
 @bot.callback_query_handler(func=lambda call: call.data == 'change_notify_status')
@@ -99,7 +115,7 @@ def get_chair_status_message(user):
 def settings_buttons():
     markup = InlineKeyboardMarkup()
     markup.add(InlineKeyboardButton(text='Змінити', callback_data='change_chair'),
-               InlineKeyboardButton(text='✖️', callback_data='close'))
+               InlineKeyboardButton(text='Закрити', callback_data='close'))
     return markup
 
 
