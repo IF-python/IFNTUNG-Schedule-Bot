@@ -1,11 +1,12 @@
+import os
+
 import peewee
 from playhouse.db_url import connect
 
 import utils
-from config import APP_DB_URL
 
 database_proxy = peewee.Proxy()
-db = connect(APP_DB_URL)
+db = connect(os.environ.get('DATABASE_URL'))
 database_proxy.initialize(db)
 
 
