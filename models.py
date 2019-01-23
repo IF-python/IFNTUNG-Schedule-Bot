@@ -6,7 +6,7 @@ from playhouse.db_url import connect
 import utils
 
 database_proxy = peewee.Proxy()
-db = connect(os.environ.get('DATABASE_URL'))
+db = connect(os.environ.get('DB_URL'))
 database_proxy.initialize(db)
 
 

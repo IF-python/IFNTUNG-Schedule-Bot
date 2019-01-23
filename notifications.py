@@ -23,7 +23,7 @@ app.conf.beat_schedule = {
 
 @worker_process_init.connect
 def init_db_connection(*args, **kwargs):
-    db = connect(os.environ.get('DATABASE_URL'))
+    db = connect(os.environ.get('DB_URL'))
     database_proxy.initialize(db)
 
 
