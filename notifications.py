@@ -23,6 +23,7 @@ app.conf.beat_schedule = {
 
 @worker_process_init.connect
 def init_db_connection(*args, **kwargs):
+    print("WORKER SYKA CREATED")
     db = connect(os.environ.get('DB_URL'))
     database_proxy.initialize(db)
 
