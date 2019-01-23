@@ -5,6 +5,7 @@ import peewee
 
 import utils
 
+database_proxy = peewee.Proxy()
 url = parse.urlparse(os.environ.get('DATABASE_URL'))
 db = peewee.PostgresqlDatabase(database=url.path[1:],
                                user=url.username,
@@ -15,7 +16,7 @@ db = peewee.PostgresqlDatabase(database=url.path[1:],
 
 class BaseModel(peewee.Model):
     class Meta:
-        database = db
+        database = database_proxy
 
 
 class Group(BaseModel):
@@ -108,4 +109,5 @@ class Student(BaseModel):
         return {'code': group, 'name': Group.get_group_full_name(group)}
 
 
+database_proxy.initialize(db)
 db.create_tables([Group, Student], safe=True)
