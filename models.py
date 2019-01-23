@@ -2,21 +2,25 @@ import os
 from urllib import parse
 
 import peewee
+from playhouse.pool import PooledPostgresqlExtDatabase
 
 import utils
 
 database_proxy = peewee.Proxy()
 url = parse.urlparse(os.environ.get('DATABASE_URL'))
-db = peewee.PostgresqlDatabase(database=url.path[1:],
-                               user=url.username,
-                               password=url.password,
-                               host=url.hostname,
-                               port=url.port)
+db = PooledPostgresqlExtDatabase(database=url.path[1:],
+                                 user=url.username,
+                                 password=url.password,
+                                 host=url.hostname,
+                                 port=url.port,
+                                 max_connections=20,
+                                 stale_timeout=300,
+                                 timeout=0)
 
 
 class BaseModel(peewee.Model):
     class Meta:
-        database = database_proxy
+        database = db
 
 
 class Group(BaseModel):
@@ -109,5 +113,5 @@ class Student(BaseModel):
         return {'code': group, 'name': Group.get_group_full_name(group)}
 
 
-database_proxy.initialize(db)
+# database_proxy.initialize(db)
 db.create_tables([Group, Student], safe=True)

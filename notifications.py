@@ -11,8 +11,8 @@ from main import bot
 from models import Student, database_proxy
 from utils import get_schedule
 
-db = connect(os.environ.get('DATABASE_URL'))
-database_proxy.initialize(db)
+# db = connect(os.environ.get('DATABASE_URL'))
+# database_proxy.initialize(db)
 app = Celery('notifications', broker=os.environ.get('REDIS_URL'))
 app.conf.beat_schedule = {
     'notify_every_week_day': {
