@@ -74,13 +74,21 @@ def create_notify_keyboard(user):
     return keyboard
 
 
+@bot.callback_query_handler(func=lambda call: call.data == 'change_notify_status')
+def change_notify_status(call):
+    user = call.from_user.id
+    Student.trigger_notify(user)
+    bot.edit_message_reply_markup(user, message_id=call.message.message_id, reply_markup=create_notify_keyboard(user))
+
+
 @bot.message_handler(commands=['notify'])
 @utils.throttle()
 @utils.group_required(wait_for_group)
 def notification_menu(message, *args):
     user = message.chat.id
     notify_time = Student.get_notify_time(user)
-    bot.send_message(user, text=notify_template.format(notify_time), reply_markup=create_notify_keyboard(user))
+    bot.send_message(user, text=notify_template.format(notify_time),
+                     reply_markup=create_notify_keyboard(user), parse_mode='Markdown')
 
 
 def get_chair_status_message(user):
@@ -188,4 +196,3 @@ def suggest(message, group, groups):
     return bot.send_message(message.chat.id,
                             text=utils.group_not_found,
                             reply_markup=ReplyKeyboardRemove())
-
