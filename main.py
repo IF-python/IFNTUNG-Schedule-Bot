@@ -114,7 +114,7 @@ def handle_default_time(call):
     user = call.from_user.id
     Student.set_notify_time(user, time)
     bot.edit_message_text(chat_id=user, text=f'Тепер Ви будете отримувати сповіщення о *{time}:00*.',
-                          message_id=call.message.message_id)
+                          message_id=call.message.message_id, parse_mode='Markdown')
     utils.r.delete(user)
 
 
