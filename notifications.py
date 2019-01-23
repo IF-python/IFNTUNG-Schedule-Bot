@@ -4,13 +4,13 @@ from time import sleep
 
 from celery import Celery
 from celery.schedules import crontab
-from playhouse.db_url import connect
 from celery.signals import worker_process_init
+from playhouse.db_url import connect
+
 from config import TIME_ZONE
 from main import bot
 from models import Student, database_proxy
 from utils import get_schedule
-
 
 app = Celery('notifications', broker=os.environ.get('REDIS_URL'))
 app.conf.beat_schedule = {
@@ -23,7 +23,7 @@ app.conf.beat_schedule = {
 
 @worker_process_init.connect
 def init_db_connection(*args, **kwargs):
-    db = connect(os.environ.get('DATABASE_URL'))
+    db = connect(os.environ.get('DB_URL'))
     database_proxy.initialize(db)
 
 

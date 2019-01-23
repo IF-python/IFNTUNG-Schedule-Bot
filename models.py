@@ -1,17 +1,13 @@
 import os
-from urllib import parse
 
 import peewee
+from playhouse.db_url import connect
 
 import utils
 
 database_proxy = peewee.Proxy()
-url = parse.urlparse(os.environ.get('DATABASE_URL'))
-db = peewee.PostgresqlDatabase(database=url.path[1:],
-                               user=url.username,
-                               password=url.password,
-                               host=url.hostname,
-                               port=url.port)
+db = connect(os.environ.get('DB_URL'))
+database_proxy.initialize(db)
 
 
 class BaseModel(peewee.Model):
@@ -109,5 +105,4 @@ class Student(BaseModel):
         return {'code': group, 'name': Group.get_group_full_name(group)}
 
 
-database_proxy.initialize(db)
 db.create_tables([Group, Student], safe=True)
