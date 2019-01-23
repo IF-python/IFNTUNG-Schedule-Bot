@@ -103,7 +103,7 @@ def handle_notify_time(message):
     else:
         Student.set_notify_time(user, time)
         bot.delete_message(chat_id=user, message_id=utils.r.get(f'{user}::time_id'))
-        bot.send_message(chat_id=user, text=f'Тепер Ви будете отримувати сповіщення о *{time.time()}:00*.',
+        bot.send_message(chat_id=user, text=f'Тепер Ви будете отримувати сповіщення о *{time.time()}*.',
                          parse_mode='Markdown')
         utils.r.delete(user)
 
@@ -113,7 +113,7 @@ def handle_default_time(call):
     time = call.data.split('_')[1]
     user = call.from_user.id
     Student.set_notify_time(user, time)
-    bot.edit_message_text(chat_id=user, text=f'Тепер Ви будете отримувати сповіщення о {time}.',
+    bot.edit_message_text(chat_id=user, text=f'Тепер Ви будете отримувати сповіщення о *{time}:00*.',
                           message_id=call.message.message_id)
     utils.r.delete(user)
 
