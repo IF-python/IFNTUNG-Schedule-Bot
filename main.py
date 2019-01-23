@@ -6,9 +6,9 @@ from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 from telebot.types import ReplyKeyboardMarkup, ReplyKeyboardRemove
 
 import utils
+from config import default_time_set
 from models import Group, Student
 from templates import chair_info, notify_template, time_menu_template
-from config import default_time_set
 
 token = os.environ.get('BOT_TOKEN')
 bot = TeleBot(token)
@@ -92,7 +92,8 @@ def handle_notify_time(message):
     else:
         Student.set_notify_time(user, time)
         bot.delete_message(chat_id=user, message_id=utils.r.get(f'{user}::time_id'))
-        bot.send_message(chat_id=user, text=f'Тепер Ви будете отримувати сповіщення о {time}.')
+        bot.send_message(chat_id=user, text=f'Тепер Ви будете отримувати сповіщення о {time.time()}.')
+        utils.r.delete(user)
 
 
 @bot.callback_query_handler(func=lambda call: call.data == 'set_time')
