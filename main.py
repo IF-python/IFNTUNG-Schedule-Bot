@@ -103,7 +103,8 @@ def handle_notify_time(message):
     else:
         Student.set_notify_time(user, time)
         bot.delete_message(chat_id=user, message_id=utils.r.get(f'{user}::time_id'))
-        bot.send_message(chat_id=user, text=f'Тепер Ви будете отримувати сповіщення о {time.time()}.')
+        bot.send_message(chat_id=user, text=f'Тепер Ви будете отримувати сповіщення о *{time.time()}:00*.',
+                         parse_mode='Markdown')
         utils.r.delete(user)
 
 
