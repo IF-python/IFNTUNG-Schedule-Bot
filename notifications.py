@@ -1,10 +1,21 @@
 import datetime
 from time import sleep
 
+from celery import Celery
+from celery.schedules import crontab
+
 from config import TIME_ZONE
 from main import bot
 from models import Student
 from utils import get_schedule
+
+app = Celery('notifications', broker='redis://localhost:6379/0')
+app.conf.beat_schedule = {
+    'notify_every_week_day': {
+        'task': 'notifications.main',
+        'schedule': crontab()
+    },
+}
 
 
 def notify(group, user_id, flag):
@@ -17,8 +28,3 @@ def main():
     for user in target_users:
         notify(user.group.group_code, user.student_id, user.extend)
         sleep(0.05)
-
-
-if __name__ == '__main__':
-    Student.set_notify_time(282213187, '8:43')
-    main()
