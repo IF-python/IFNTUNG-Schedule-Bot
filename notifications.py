@@ -1,4 +1,5 @@
 import datetime
+import os
 from time import sleep
 
 from celery import Celery
@@ -9,7 +10,7 @@ from main import bot
 from models import Student
 from utils import get_schedule
 
-app = Celery('notifications', broker='redis://localhost:6379/0')
+app = Celery('notifications', broker=os.environ.get('REDIS_URL'))
 app.conf.beat_schedule = {
     'notify_every_week_day': {
         'task': 'notifications.main',
