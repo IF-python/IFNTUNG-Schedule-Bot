@@ -33,3 +33,4 @@ def main():
     for user in target_users:
         notify(user.group.group_code, user.student_id, user.extend)
         sleep(0.05)
+    return current_time, target_users
