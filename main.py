@@ -82,12 +82,27 @@ def create_time_buttons():
     return keyboard
 
 
+@bot.message_handler(func=lambda m: utils.r.get(m.chat.id) == b'set_time')
+@utils.throttle(time=1)
+def handle_notify_time(message):
+    user = message.chat.id
+    time = utils.validate_time(message.text)
+    if not time:
+        bot.send_message(chat_id=user, text='Хибний формат часу, спробуйте знову:', reply_markup=get_cancel_button())
+    else:
+        Student.set_notify_time(user, time)
+        bot.delete_message(chat_id=user, message_id=utils.r.get(f'{user}::time_id'))
+        bot.send_message(chat_id=user, text=f'Тепер Ви будете отримувати сповіщення о {time}.')
+
+
 @bot.callback_query_handler(func=lambda call: call.data == 'set_time')
 def set_notify_time_menu(call):
-    bot.edit_message_text(message_id=call.message.message_id,
-                          chat_id=call.from_user.id,
-                          reply_markup=create_time_buttons(),
-                          text=time_menu_template)
+    user = call.from_user.id
+    msg_id = bot.edit_message_text(message_id=call.message.message_id,
+                                   chat_id=user, reply_markup=create_time_buttons(),
+                                   text=time_menu_template)
+    utils.r.set(user, 'set_time')
+    utils.r.set(f'{user}::time_id', msg_id.message_id)
 
 
 @bot.callback_query_handler(func=lambda call: call.data == 'change_notify_status')
