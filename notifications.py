@@ -18,8 +18,6 @@ app.conf.beat_schedule = {
         'schedule': crontab()
     },
 }
-database_proxy = Proxy()
-database_proxy.initialize(db)
 
 
 def notify(group, user_id, flag):
@@ -28,6 +26,8 @@ def notify(group, user_id, flag):
 
 @app.task
 def main():
+    database_proxy = Proxy()
+    database_proxy.initialize(db)
     current_time = TIME_ZONE.localize(datetime.datetime.now()).time().replace(second=0, microsecond=0)
     target_users = Student.at_time(current_time)
     for user in target_users:
