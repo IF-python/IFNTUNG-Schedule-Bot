@@ -96,6 +96,16 @@ def handle_notify_time(message):
         utils.r.delete(user)
 
 
+@bot.callback_query_handler(func=lambda call: call.data.startswith('time'))
+def handle_default_time(call):
+    time = call.data.split('_')[1]
+    user = call.from_user.id
+    Student.set_notify_time(user, time)
+    bot.edit_message_text(chat_id=user, text=f'Тепер Ви будете отримувати сповіщення о {time.time()}.',
+                          message_id=call.message.message_id)
+    utils.r.delete(user)
+
+
 @bot.callback_query_handler(func=lambda call: call.data == 'set_time')
 def set_notify_time_menu(call):
     user = call.from_user.id
