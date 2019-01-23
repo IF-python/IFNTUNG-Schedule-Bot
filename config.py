@@ -17,7 +17,7 @@ mp = Mixpanel(os.environ.get('MIX_TOKEN'))
 r = redis.from_url(os.environ.get('REDIS_URL'))
 flag_message = 'Військова підготовка'
 default_time_set = ['6:00', '6:15', '6:30', '6:45', '7:00', '7:15', '7:30', '7:45', '8:00']
-DB_URL = 'postgres+pool://{}?max_connections={}&stale_timeout=300'
+DB_URL = 'postgres+pool://{}?max_connections={}&stale_timeout=300&timeout=60'
 DATABASE_URL = os.environ.get('DATABASE_URL')
 APP_DB_URL = DB_URL.format(DATABASE_URL[11:], 10)
 CELERY_DB_URL = DB_URL.format(DATABASE_URL[11:], 5)

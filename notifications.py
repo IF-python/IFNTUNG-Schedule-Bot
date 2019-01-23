@@ -6,7 +6,6 @@ from celery import Celery
 from celery.schedules import crontab
 from celery.signals import worker_process_init
 from playhouse.db_url import connect
-
 from config import TIME_ZONE, CELERY_DB_URL
 from main import bot
 from models import Student, database_proxy
