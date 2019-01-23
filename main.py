@@ -79,7 +79,18 @@ def create_time_buttons():
     keyboard = InlineKeyboardMarkup()
     keyboard.add(*[InlineKeyboardButton(text=time, callback_data=f'time_{time}')
                    for time in default_time_set])
+    keyboard.add(InlineKeyboardButton(text='Відміна', callback_data='cancel'))
     return keyboard
+
+
+@bot.message_handler(commands=['notify'])
+@utils.throttle()
+@utils.group_required(wait_for_group)
+def notification_menu(message, *args):
+    user = message.chat.id
+    notify_time = Student.get_notify_time(user)
+    bot.send_message(user, text=notify_template.format(notify_time or 'Не вказано'),
+                     reply_markup=create_notify_keyboard(user), parse_mode='Markdown')
 
 
 @bot.message_handler(func=lambda m: utils.r.get(m.chat.id) == b'set_time')
@@ -121,16 +132,6 @@ def change_notify_status(call):
     user = call.from_user.id
     Student.trigger_notify(user)
     bot.edit_message_reply_markup(user, message_id=call.message.message_id, reply_markup=create_notify_keyboard(user))
-
-
-@bot.message_handler(commands=['notify'])
-@utils.throttle()
-@utils.group_required(wait_for_group)
-def notification_menu(message, *args):
-    user = message.chat.id
-    notify_time = Student.get_notify_time(user)
-    bot.send_message(user, text=notify_template.format(notify_time),
-                     reply_markup=create_notify_keyboard(user), parse_mode='Markdown')
 
 
 def get_chair_status_message(user):
