@@ -11,12 +11,14 @@ from main import bot
 from models import Student, database_proxy
 from utils import get_schedule
 
+db = connect(os.environ.get('DATABASE_URL'))
+database_proxy.initialize(db)
 app = Celery('notifications', broker=os.environ.get('REDIS_URL'))
 app.conf.beat_schedule = {
     'notify_every_week_day': {
         'task': 'notifications.main',
         'schedule': crontab()
-    },
+    }
 }
 
 
@@ -26,8 +28,6 @@ def notify(group, user_id, flag):
 
 @app.task
 def main():
-    db = connect(os.environ.get('DATABASE_URL'))
-    database_proxy.initialize(db)
     current_time = datetime.datetime.now(TIME_ZONE).time().replace(second=0, microsecond=0)
     target_users = Student.at_time(current_time)
     for user in target_users:
