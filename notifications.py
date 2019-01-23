@@ -28,7 +28,7 @@ def notify(group, user_id, flag):
 def main():
     db = connect(os.environ.get('DATABASE_URL'))
     database_proxy.initialize(db)
-    current_time = TIME_ZONE.localize(datetime.datetime.now()).time().replace(second=0, microsecond=0)
+    current_time = datetime.datetime.now(TIME_ZONE).time().replace(second=0, microsecond=0)
     target_users = Student.at_time(current_time)
     for user in target_users:
         notify(user.group.group_code, user.student_id, user.extend)
