@@ -17,7 +17,7 @@ app = Celery('notifications', broker=os.environ.get('REDIS_URL'))
 app.conf.beat_schedule = {
     'notify_every_week_day': {
         'task': 'notifications.main',
-        'schedule': crontab()
+        'schedule': crontab(day_of_week='1-5')
     }
 }
 
