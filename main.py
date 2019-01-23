@@ -7,7 +7,7 @@ from telebot.types import ReplyKeyboardMarkup, ReplyKeyboardRemove
 
 import utils
 from models import Group, Student
-from templates import chair_info
+from templates import chair_info, notify_template
 
 token = os.environ.get('BOT_TOKEN')
 bot = TeleBot(token)
@@ -60,6 +60,27 @@ def get_my_group(message, *args):
     user = message.from_user.id
     desc = Student.get_group_desc(message.chat.id)
     return bot.send_message(user, text=utils.group_info.format(**desc))
+
+
+def create_notify_keyboard(user):
+    keyboard = InlineKeyboardMarkup()
+    user_notify_status = Student.get_user_notify_status(user)
+    turn = 'Увімкнути' if not user_notify_status else 'Вимкнути'
+    notify_status_btn = InlineKeyboardButton(text=turn, callback_data='change_notify_status')
+    set_time_btn = InlineKeyboardButton(text='Встановити час', callback_data='set_time')
+    close_btn = InlineKeyboardButton(text='✖️', callback_data='close')
+    keyboard.add(notify_status_btn, set_time_btn)
+    keyboard.add(close_btn)
+    return keyboard
+
+
+@bot.message_handler(commands=['notify'])
+@utils.throttle()
+@utils.group_required(wait_for_group)
+def notification_menu(message, *args):
+    user = message.chat.id
+    notify_time = Student.get_notify_time(user)
+    bot.send_message(user, text=notify_template.format(notify_time), reply_markup=create_notify_keyboard(user))
 
 
 def get_chair_status_message(user):

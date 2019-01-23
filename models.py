@@ -43,6 +43,35 @@ class Student(BaseModel):
     student_id = peewee.IntegerField()
     group = peewee.ForeignKeyField(Group, backref='students', null=True)
     extend = peewee.BooleanField(default=False)
+    notify = peewee.BooleanField(default=False)
+    notify_time = peewee.TimeField(null=True)
+
+    @classmethod
+    def get_notify_time(cls, student_id):
+        student, created = cls.get_student(student_id)
+        return student.notify_time
+
+    @classmethod
+    def get_user_notify_status(cls, student_id):
+        student, created = cls.get_student(student_id)
+        return student.notify
+
+    @classmethod
+    def trigger_notify(cls, student_id):
+        student, created = cls.get_student(student_id)
+        student.notify = not student.notify
+        student.save()
+        return student.notify
+
+    @classmethod
+    def set_notify_time(cls, student_id, time):
+        student, created = cls.get_student(student_id)
+        student.notify_time = time
+        student.save()
+
+    @classmethod
+    def at_time(cls, time):
+        return cls.select().where((cls.notify_time == time) & cls.notify)
 
     @classmethod
     def get_student(cls, student_id):

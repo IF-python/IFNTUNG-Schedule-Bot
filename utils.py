@@ -32,6 +32,13 @@ def track(user, message):
         logger.error('Mix panel track failed')
 
 
+def validate_time(time):
+    try:
+        return dt.datetime.strptime(time, '%H:%M')
+    except ValueError:
+        return False
+
+
 def get_cached_groups():
     groups = r.get('groups')
     if not groups:
