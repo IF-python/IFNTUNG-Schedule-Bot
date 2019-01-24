@@ -79,8 +79,8 @@ def create_time_buttons():
     keyboard = InlineKeyboardMarkup()
     keyboard.add(*[InlineKeyboardButton(text=time, callback_data=f'time_{time}')
                    for time in default_time_set])
-    keyboard.add(InlineKeyboardButton(text='Назад', callback_data='back'))
-    keyboard.add(InlineKeyboardButton(text='Закрити', callback_data='close'))
+    keyboard.add(InlineKeyboardButton(text='Назад', callback_data='back'),
+                 InlineKeyboardButton(text='Закрити', callback_data='close'))
     return keyboard
 
 
@@ -100,7 +100,7 @@ def notification_menu(message, *args):
 def make_notification_menu(message, action=bot.send_message, **kwargs):
     user = message.chat.id
     notify_time = Student.get_notify_time(user)
-    action(user, text=notify_template.format(notify_time or 'Не вказано'),
+    action(chat_id=user, text=notify_template.format(notify_time or 'Не вказано'),
            reply_markup=create_notify_keyboard(user), parse_mode='Markdown', **kwargs)
 
 
