@@ -80,12 +80,13 @@ def create_time_buttons():
     keyboard.add(*[InlineKeyboardButton(text=time, callback_data=f'time_{time}')
                    for time in default_time_set])
     keyboard.add(InlineKeyboardButton(text='Назад', callback_data='back'),
-                 InlineKeyboardButton(text='Закрити', callback_data='close'))
+                 InlineKeyboardButton(text='Відміна', callback_data='cancel'))
     return keyboard
 
 
 @bot.callback_query_handler(func=lambda call: call.data == 'back')
 def back_to_notify(call):
+    utils.r.delete(call.from_user.id)
     return make_notification_menu(message=call.message, action=bot.edit_message_text,
                                   message_id=call.message.message_id)
 
