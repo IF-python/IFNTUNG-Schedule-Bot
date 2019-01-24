@@ -79,18 +79,29 @@ def create_time_buttons():
     keyboard = InlineKeyboardMarkup()
     keyboard.add(*[InlineKeyboardButton(text=time, callback_data=f'time_{time}')
                    for time in default_time_set])
-    keyboard.add(InlineKeyboardButton(text='Відміна', callback_data='cancel'))
+    keyboard.add(InlineKeyboardButton(text='Назад', callback_data='back'))
+    keyboard.add(InlineKeyboardButton(text='Закрити', callback_data='close'))
     return keyboard
+
+
+@bot.callback_query_handler(func=lambda call: call.data == 'back')
+def back_to_notify(call):
+    return make_notification_menu(message=call.message, action=bot.edit_message_text,
+                                  message_id=call.message.message_id)
 
 
 @bot.message_handler(commands=['notify'])
 @utils.throttle()
 @utils.group_required(wait_for_group)
 def notification_menu(message, *args):
+    return make_notification_menu(message)
+
+
+def make_notification_menu(message, action=bot.send_message, **kwargs):
     user = message.chat.id
     notify_time = Student.get_notify_time(user)
-    bot.send_message(user, text=notify_template.format(notify_time or 'Не вказано'),
-                     reply_markup=create_notify_keyboard(user), parse_mode='Markdown')
+    action(user, text=notify_template.format(notify_time or 'Не вказано'),
+           reply_markup=create_notify_keyboard(user), parse_mode='Markdown', **kwargs)
 
 
 @bot.message_handler(func=lambda m: utils.r.get(m.chat.id) == b'set_time')
