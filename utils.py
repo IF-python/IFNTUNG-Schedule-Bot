@@ -13,7 +13,7 @@ from mixpanel import MixpanelException
 
 import models
 from config import *
-from templates import *
+from templates import pretty_format, not_found, response_format
 
 logging.basicConfig(format=u'%(filename)s[LINE:%(lineno)d]# %(levelname)-2s [%(asctime)s] %(message)s',
                     level=logging.INFO)
