@@ -15,6 +15,7 @@ def run_dispatch(message):
         try:
             bot.send_message(user.student_id, text=message)
             received += 1
+            print(received)
         except ApiException:
             pass
         sleep(TIMEOUT)

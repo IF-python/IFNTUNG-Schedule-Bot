@@ -189,9 +189,7 @@ def collect_tuples(data, date, verbose_day, flag):
     filter_function = switcher(flag)
     for element in filter_function(data):
         if len(element.data) > timestamp_length:
-            result.append(CLASS(element.data[s_time],
-                                element.data[e_time],
-                                pattern.sub('\n', element.rest),
+            result.append(CLASS(element.data[s_time], element.data[e_time], pattern.sub('\n', element.rest),
                                 element.index))
     return make_response(result, date, len(result), verbose_day)
 
