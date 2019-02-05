@@ -6,7 +6,7 @@ from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 from telebot.types import ReplyKeyboardMarkup, ReplyKeyboardRemove
 
 import utils
-from config import default_time_set
+from config import DEFAULT_TIME_SET
 from models import Group, Student
 from templates import chair_info, notify_template, time_menu_template
 
@@ -78,7 +78,7 @@ def create_notify_keyboard(user):
 def create_time_buttons():
     keyboard = InlineKeyboardMarkup()
     keyboard.add(*[InlineKeyboardButton(text=time, callback_data=f'time_{time}')
-                   for time in default_time_set])
+                   for time in DEFAULT_TIME_SET])
     keyboard.add(InlineKeyboardButton(text='Назад', callback_data='back'),
                  InlineKeyboardButton(text='Відміна', callback_data='cancel'))
     return keyboard
@@ -194,12 +194,12 @@ def greeting(message, *args):
 @utils.throttle()
 def get_stats(message):
     user = message.from_user.id
-    requests_count = utils.requests_limit_per_day - int(utils.get_requests_count(user))
+    requests_count = utils.REQUESTS_LIMIT_PER_DAY - int(utils.get_requests_count(user))
     bot.send_message(user, parse_mode='Markdown', disable_web_page_preview=True,
                      text=utils.info_message.format(len(Student.select()), requests_count))
 
 
-@bot.message_handler(func=lambda m: m.text in utils.days)
+@bot.message_handler(func=lambda m: m.text in utils.DAYS)
 @utils.throttle()
 @utils.limit_requests
 @utils.in_thread
@@ -236,7 +236,7 @@ def send_tip(message):
 
 def send_buttons(message):
     markup = ReplyKeyboardMarkup(resize_keyboard=True)
-    markup.add(*utils.days)
+    markup.add(*utils.DAYS)
     markup.add('Вказати конкретну дату')
     bot.send_message(message.from_user.id, text='Меню', reply_markup=markup)
 

@@ -77,7 +77,7 @@ def limit_requests(func):
     def decorator(message):
         user_id = message.from_user.id
         user_request_count = get_requests_count(user_id)
-        if int(user_request_count) < requests_limit_per_day:
+        if int(user_request_count) < REQUESTS_LIMIT_PER_DAY:
             r.set(f'limit::{user_id}', int(user_request_count) + 1, ex=get_ttl())
             return func(message)
         track(str(user_id), 'Reached requests limit')
@@ -85,7 +85,7 @@ def limit_requests(func):
     return decorator
 
 
-def throttle(time=throttle_time):
+def throttle(time=THROTTLE_TIME):
     def decorator(func):
         @wraps(func)
         def wrapper(message):
@@ -142,18 +142,18 @@ def cached(func):
 @cached
 def get_schedule(day, group, bot=None, user=None, flag=None):
     current_date = dt.datetime.date(dt.datetime.now())
-    current_date += dt.timedelta(days=days[day])
+    current_date += dt.timedelta(days=DAYS[day])
     return parse(current_date.strftime('%d.%m.%Y'), calendar.day_name[current_date.weekday()], group, flag)
 
 
 def get_raw_content(date, group):
     payload = {
-        'group': group.encode(default_encoding),
+        'group': group.encode(DEFAULT_ENCODING),
         'edate': date,
         'sdate': date
     }
-    response = requests.post(url, data=payload)
-    response.encoding = default_encoding
+    response = requests.post(URL, data=payload)
+    response.encoding = DEFAULT_ENCODING
     return response.text
 
 
@@ -167,16 +167,16 @@ def parse(date, verbose_day, group, flag):
 
 def with_extended_flag(data):
     for index, element in enumerate(data, 1):
-        if flag_message in element[rest]:
-            yield filtered(index, flag_message, element)
+        if FLAG_MESSAGE in element[rest]:
+            yield filtered(index, FLAG_MESSAGE, element)
 
 
 def without_extended_flag(data):
     for index, element in enumerate(data, 1):
         raw = element[rest]
-        if raw.strip() != flag_message:
-            if flag_message in raw:
-                raw = raw.replace(flag_message, '')
+        if raw.strip() != FLAG_MESSAGE:
+            if FLAG_MESSAGE in raw:
+                raw = raw.replace(FLAG_MESSAGE, '')
             yield filtered(index, raw, element)
 
 
@@ -188,7 +188,7 @@ def collect_tuples(data, date, verbose_day, flag):
     result = []
     filter_function = switcher(flag)
     for element in filter_function(data):
-        if len(element.data) > timestamp_length:
+        if len(element.data) > TIMESTAMP_LENGTH:
             result.append(CLASS(element.data[s_time], element.data[e_time], pattern.sub('\n', element.rest),
                                 element.index))
     return make_response(result, date, len(result), verbose_day)
