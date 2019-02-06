@@ -219,8 +219,8 @@ def send_schedule(message, user, group):
 def certain_date(message, user, group):
     splited = message.text.split()
     bot.send_chat_action(user, 'typing')
-    extended_flag = Student.get_extend_flag(user)
     if len(splited) == 2:
+        extended_flag = Student.get_extend_flag(user)
         bot.send_message(user, text=utils.from_string(splited[1], group, extended_flag),
                          reply_to_message_id=message.message_id, parse_mode='Markdown')
     else:
