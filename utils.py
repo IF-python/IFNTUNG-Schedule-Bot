@@ -61,7 +61,7 @@ def get_cache_time():
 
 def get_requests_count(user_id):
     requests_count = redis_storage.get(f'limit::{user_id}')
-    return int(requests_count) if response_format else 0
+    return int(requests_count) if requests_count else 0
 
 
 def in_thread(func):
