@@ -15,10 +15,10 @@ def receive_update():
     return "!", 200
 
 
-@app.route("/" + secret)
+@app.route("/")
 def web_hook():
     bot.remove_webhook()
-    bot.set_webhook(url='https://ifntungskedbot.herokuapp.com/' + token)
+    bot.set_webhook(url=secret + token)
     return "RESET WEB HOOK", 200
 
 
