@@ -18,7 +18,7 @@ from templates import *
 logging.basicConfig(format=u'%(filename)s[LINE:%(lineno)d]# %(levelname)-2s [%(asctime)s] %(message)s',
                     level=logging.INFO)
 logger = logging.getLogger('worker')  # TODO fix this shit
-CLASS = namedtuple('CLASS', ['from_time', 'to_time', 'rest', 'num'])
+lesson = namedtuple('lesson', ['from_time', 'to_time', 'rest', 'num'])
 filtered = namedtuple('Filtered', ['index', 'rest', 'data'])
 xpath = '//*[@id="wrap"]/div/div/div/div[3]/div[1]/div[1]/table'
 s_time, e_time, rest = slice(1, 6), slice(6, 11), slice(11, None)
@@ -40,18 +40,18 @@ def validate_time(time):
 
 
 def get_cached_groups():
-    groups = r.get('groups')
+    groups = redis_storage.get('groups')
     if not groups:
         g = models.Group.get_all_groups()
-        r.set('groups', json.dumps(g))
+        redis_storage.set('groups', json.dumps(g))
         return g
     return json.loads(groups)
 
 
 def get_ttl():
     now = dt.datetime.now(TIME_ZONE)
-    enf_of_the_day = TIME_ZONE.localize(dt.datetime.combine(now, dt.time.max))
-    return int((enf_of_the_day - now).total_seconds())
+    end_of_the_day = TIME_ZONE.localize(dt.datetime.combine(now, dt.time.max))
+    return int((end_of_the_day - now).total_seconds())
 
 
 def get_cache_time():
@@ -60,7 +60,8 @@ def get_cache_time():
 
 
 def get_requests_count(user_id):
-    return r.get(f'limit::{user_id}') or 0
+    requests_count = redis_storage.get(f'limit::{user_id}')
+    return int(requests_count) if response_format else 0
 
 
 def in_thread(func):
@@ -77,10 +78,10 @@ def limit_requests(func):
     def decorator(message):
         user_id = message.from_user.id
         user_request_count = get_requests_count(user_id)
-        if int(user_request_count) < REQUESTS_LIMIT_PER_DAY:
-            r.set(f'limit::{user_id}', int(user_request_count) + 1, ex=get_ttl())
+        if user_request_count < REQUESTS_LIMIT_PER_DAY:
+            redis_storage.set(f'limit::{user_id}', int(user_request_count) + 1, ex=get_ttl())
             return func(message)
-        track(str(user_id), 'Reached requests limit')
+        track(user_id, 'Reached requests limit')
 
     return decorator
 
@@ -90,10 +91,10 @@ def throttle(time=THROTTLE_TIME):
         @wraps(func)
         def wrapper(message):
             user_id = message.from_user.id
-            throttle_value = r.set(f'throttle::{user_id}', True, ex=time, nx=True)
+            throttle_value = redis_storage.set(f'throttle::{user_id}', True, ex=time, nx=True)
             if throttle_value:
                 return func(message)
-            track(str(user_id), 'Throttle')
+            track(user_id, 'Throttle')
 
         return wrapper
 
@@ -127,11 +128,11 @@ def from_string(date, group, flag):
 def cached(func):
     @wraps(func)
     def wrapper(day, group, bot, user, extended_flag):
-        from_cache = r.get(f'schedule::{day}::{extended_flag}::{group}')
+        from_cache = redis_storage.get(f'schedule::{day}::{extended_flag}::{group}')
         if not from_cache:
             bot.send_chat_action(user, 'typing')
             result = func(day, group, flag=extended_flag)
-            r.set(f'schedule::{day}::{extended_flag}::{group}',
+            redis_storage.set(f'schedule::{day}::{extended_flag}::{group}',
                   result, ex=get_cache_time())
             return result
         return from_cache
@@ -189,8 +190,8 @@ def collect_tuples(data, date, verbose_day, flag):
     filter_function = switcher(flag)
     for element in filter_function(data):
         if len(element.data) > TIMESTAMP_LENGTH:
-            result.append(CLASS(element.data[s_time], element.data[e_time], pattern.sub('\n', element.rest),
-                                element.index))
+            result.append(lesson(element.data[s_time], element.data[e_time], pattern.sub('\n', element.rest),
+                                 element.index))
     return make_response(result, date, len(result), verbose_day)
 
 

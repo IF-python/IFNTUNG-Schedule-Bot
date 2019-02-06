@@ -14,14 +14,14 @@ token = os.environ.get('BOT_TOKEN')
 bot = TeleBot(token)
 
 
-@bot.message_handler(func=lambda m: utils.r.get(m.chat.id) == b'set_group')
+@bot.message_handler(func=lambda m: utils.redis_storage.get(m.chat.id) == b'set_group')
 @utils.throttle(time=1)
 def handle_group(message):
     user = message.from_user.id
     group = message.text.upper()
     all_groups = utils.get_cached_groups()
     if group.upper() in all_groups:
-        utils.r.delete(user)
+        utils.redis_storage.delete(user)
         Student.set_group(group_code=group, student_id=user)
         group_full = Group.get_group_full_name(group)
         bot.send_message(user, text=utils.set_group_message.format(group_full, group))
@@ -37,14 +37,14 @@ def get_cancel_button():
 
 def wait_for_group(message):
     user = message.from_user.id
-    utils.r.set(user, 'set_group')
+    utils.redis_storage.set(user, 'set_group')
     return bot.send_message(user, text='Відправте шифр вашої групи:', reply_markup=get_cancel_button())
 
 
 @bot.callback_query_handler(func=lambda call: call.data == 'cancel')
 def cancel(call):
     user = call.from_user.id
-    utils.r.delete(user)
+    utils.redis_storage.delete(user)
     return bot.edit_message_text(chat_id=user, message_id=call.message.message_id, text='Відмінено')
 
 
@@ -86,7 +86,7 @@ def create_time_buttons():
 
 @bot.callback_query_handler(func=lambda call: call.data == 'back')
 def back_to_notify(call):
-    utils.r.delete(call.from_user.id)
+    utils.redis_storage.delete(call.from_user.id)
     return make_notification_menu(message=call.message, action=bot.edit_message_text,
                                   message_id=call.message.message_id)
 
@@ -105,7 +105,7 @@ def make_notification_menu(message, action=bot.send_message, **kwargs):
            reply_markup=create_notify_keyboard(user), parse_mode='Markdown', **kwargs)
 
 
-@bot.message_handler(func=lambda m: utils.r.get(m.chat.id) == b'set_time')
+@bot.message_handler(func=lambda m: utils.redis_storage.get(m.chat.id) == b'set_time')
 @utils.throttle(time=1)
 def handle_notify_time(message):
     user = message.chat.id
@@ -114,10 +114,10 @@ def handle_notify_time(message):
         bot.send_message(chat_id=user, text='Хибний формат часу, спробуйте знову:', reply_markup=get_cancel_button())
     else:
         Student.set_notify_time(user, time)
-        bot.delete_message(chat_id=user, message_id=utils.r.get(f'{user}::time_id'))
+        bot.delete_message(chat_id=user, message_id=utils.redis_storage.get(f'{user}::time_id'))
         bot.send_message(chat_id=user, text=f'Тепер Ви будете отримувати сповіщення о *{time.time()}*.',
                          parse_mode='Markdown')
-        utils.r.delete(user)
+        utils.redis_storage.delete(user)
 
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('time'))
@@ -127,7 +127,7 @@ def handle_default_time(call):
     Student.set_notify_time(user, time)
     bot.edit_message_text(chat_id=user, text=f'Тепер Ви будете отримувати сповіщення о *{time}:00*.',
                           message_id=call.message.message_id, parse_mode='Markdown')
-    utils.r.delete(user)
+    utils.redis_storage.delete(user)
 
 
 @bot.callback_query_handler(func=lambda call: call.data == 'set_time')
@@ -136,8 +136,8 @@ def set_notify_time_menu(call):
     msg_id = bot.edit_message_text(message_id=call.message.message_id,
                                    chat_id=user, reply_markup=create_time_buttons(),
                                    text=time_menu_template)
-    utils.r.set(user, 'set_time')
-    utils.r.set(f'{user}::time_id', msg_id.message_id)
+    utils.redis_storage.set(user, 'set_time')
+    utils.redis_storage.set(f'{user}::time_id', msg_id.message_id)
 
 
 @bot.callback_query_handler(func=lambda call: call.data == 'change_notify_status')
@@ -208,7 +208,7 @@ def send_schedule(message, user, group):
     extended_flag = Student.get_extend_flag(user)
     bot.send_message(user, text=utils.get_schedule(message.text, group, bot, user, extended_flag),
                      reply_to_message_id=message.message_id, parse_mode='Markdown')
-    utils.track(str(user), 'Get schedule')
+    utils.track(user, 'Get schedule')
 
 
 @bot.message_handler(commands=['date'])
@@ -225,7 +225,7 @@ def certain_date(message, user, group):
                          reply_to_message_id=message.message_id, parse_mode='Markdown')
     else:
         bot.reply_to(message, text='Хибний формат команди.')
-    utils.track(str(user), 'Get schedule')
+    utils.track(user, 'Get schedule')
 
 
 @bot.message_handler(regexp='Вказати конкретну дату')

@@ -14,6 +14,6 @@ DAYS = {'Сьогодні': 0, 'Завтра': 1}
 REQUESTS_LIMIT_PER_DAY = 25
 THROTTLE_TIME = 2
 mp = Mixpanel(os.environ.get('MIX_TOKEN'))
-r = redis.from_url(os.environ.get('REDIS_URL'))
+redis_storage = redis.from_url(os.environ.get('REDIS_URL'))
 FLAG_MESSAGE = 'Військова підготовка'
 DEFAULT_TIME_SET = ['6:00', '6:15', '6:30', '6:45', '7:00', '7:15', '7:30', '7:45', '8:00']
