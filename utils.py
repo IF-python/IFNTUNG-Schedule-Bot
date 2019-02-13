@@ -143,7 +143,7 @@ def cached(func):
 
 @cached
 def get_schedule(day, group, bot=None, user=None, flag=None):
-    current_date = dt.datetime.date(dt.datetime.now())
+    current_date = dt.datetime.date(dt.datetime.now(TIME_ZONE))
     current_date += dt.timedelta(days=DAYS[day])
     return parse(current_date.strftime('%d.%m.%Y'), calendar.day_name[current_date.weekday()], group, flag)
 
