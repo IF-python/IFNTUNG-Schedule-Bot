@@ -12,6 +12,7 @@ from main import bot
 from models import Student, database_proxy
 from utils import get_schedule
 
+prefix = '*Розклад на завтра.*\n'
 app = Celery('notifications', broker=os.environ.get('REDIS_URL'))
 app.conf.timezone = 'Europe/Kiev'
 app.conf.beat_schedule = {
@@ -29,7 +30,7 @@ def init_db_connection(*args, **kwargs):
 
 
 def notify(group, user_id, flag):
-    bot.send_message(user_id, text=get_schedule('Завтра', group, bot, user_id, flag),
+    bot.send_message(user_id, text=prefix + get_schedule('Завтра', group, bot, user_id, flag),
                      parse_mode='Markdown')
 
 
