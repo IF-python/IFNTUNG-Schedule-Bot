@@ -17,7 +17,7 @@ app.conf.timezone = 'Europe/Kiev'
 app.conf.beat_schedule = {
     'notify_every_week_day': {
         'task': 'notifications.main',
-        'schedule': crontab(day_of_week='1-5')
+        'schedule': crontab(day_of_week='0-4')
     }
 }
 
@@ -29,7 +29,7 @@ def init_db_connection(*args, **kwargs):
 
 
 def notify(group, user_id, flag):
-    bot.send_message(user_id, text=get_schedule('Сьогодні', group, bot, user_id, flag),
+    bot.send_message(user_id, text=get_schedule('Завтра', group, bot, user_id, flag),
                      parse_mode='Markdown')
 
 
