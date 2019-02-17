@@ -6,6 +6,7 @@ from celery import Celery
 from celery.schedules import crontab
 from celery.signals import worker_process_init
 from playhouse.db_url import connect
+from telebot.apihelper import ApiException
 
 from config import TIME_ZONE
 from main import bot
@@ -30,8 +31,11 @@ def init_db_connection(*args, **kwargs):
 
 
 def notify(group, user_id, flag):
-    bot.send_message(user_id, text=prefix + get_schedule('Завтра', group, bot, user_id, flag),
-                     parse_mode='Markdown')
+    try:
+        bot.send_message(user_id, text=prefix + get_schedule('Завтра', group, bot, user_id, flag),
+                         parse_mode='Markdown')
+    except ApiException:
+        pass
 
 
 @app.task(ignore_result=True)
