@@ -136,7 +136,7 @@ def cached(func):
             redis_storage.set(f'schedule::{day}::{extended_flag}::{group}',
                               result, ex=ttl)
             return result
-        return from_cache
+        return from_cache.decode()
 
     return wrapper
 

@@ -32,7 +32,7 @@ def init_db_connection(*args, **kwargs):
 
 def notify(group, user_id, flag):
     try:
-        bot.send_message(user_id, text=prefix + get_schedule('Завтра', group, bot, user_id, flag).decode(),
+        bot.send_message(user_id, text=prefix + get_schedule('Завтра', group, bot, user_id, flag),
                          parse_mode='Markdown')
     except ApiException:
         pass
