@@ -141,6 +141,16 @@ def cached(func):
     return wrapper
 
 
+def read_timeout_rollback(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except requests.exceptions.RequestException:
+            return service_unavailable
+    return wrapper
+
+
 @cached
 def get_schedule(day, group, bot=None, user=None, flag=None):
     current_date = dt.datetime.date(dt.datetime.now(TIME_ZONE))
@@ -159,6 +169,7 @@ def get_raw_content(date, group):
     return response.text
 
 
+@read_timeout_rollback
 def parse(date, verbose_day, group, flag):
     tree = html.fromstring(get_raw_content(date, group)).xpath(xpath)
     if tree:
