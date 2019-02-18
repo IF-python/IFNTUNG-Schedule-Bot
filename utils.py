@@ -132,9 +132,10 @@ def cached(func):
         if not from_cache:
             bot.send_chat_action(user, 'typing')
             result = func(day, group, flag=extended_flag)
-            ttl = get_cache_time()
-            redis_storage.set(f'schedule::{day}::{extended_flag}::{group}',
-                              result, ex=ttl)
+            if result != service_unavailable:
+                ttl = get_cache_time()
+                redis_storage.set(f'schedule::{day}::{extended_flag}::{group}',
+                                  result, ex=ttl)
             return result
         return from_cache.decode()
 
