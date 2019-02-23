@@ -11,7 +11,7 @@ DEFAULT_ENCODING = 'windows-1251'
 URL = 'http://194.44.112.6/cgi-bin/timetable.cgi?n=700'
 TIMESTAMP_LENGTH = 12
 DAYS = {'Сьогодні': 0, 'Завтра': 1}
-REQUESTS_LIMIT_PER_DAY = 25
+REQUESTS_LIMIT_PER_DAY = 40
 THROTTLE_TIME = 2
 mp = Mixpanel(os.environ.get('MIX_TOKEN'))
 redis_storage = redis.from_url(os.environ.get('REDIS_URL'))

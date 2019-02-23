@@ -254,11 +254,20 @@ def send_tip(message):
     bot.reply_to(message, text=utils.tip_message)
 
 
+@bot.callback_query_handler(func=lambda call: call.data == 'how_it_works')
+def how_it_works(call):
+    keyboard = InlineKeyboardMarkup()
+    keyboard.add(InlineKeyboardButton(text='Назад', callback_data='back_weekdays'))
+    bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
+                          text=utils.weekdays_info, reply_markup=keyboard)
+
+
 def build_weekdays_buttons():
     keyboard = InlineKeyboardMarkup(row_width=2)
     buttons = [InlineKeyboardButton(text=name, callback_data=f'weekday_{call}')
                for call, name in enumerate(utils.DAY_NAMES)]
     buttons.append(InlineKeyboardButton(text='Закрити', callback_data='close'))
+    buttons.append(InlineKeyboardButton(text='Як це працює?', callback_data='how_it_works'))
     keyboard.add(*buttons)
     return keyboard
 
