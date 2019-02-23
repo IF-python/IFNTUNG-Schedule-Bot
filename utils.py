@@ -8,6 +8,7 @@ from collections import namedtuple
 from functools import wraps
 
 import requests
+from dateutil.rrule import rrule, WEEKLY
 from lxml import html
 from mixpanel import MixpanelException
 
@@ -23,6 +24,12 @@ filtered = namedtuple('Filtered', ['index', 'rest', 'data'])
 xpath = '//*[@id="wrap"]/div/div/div/div[3]/div[1]/div[1]/table'
 s_time, e_time, rest = slice(1, 6), slice(6, 11), slice(11, None)
 pattern = re.compile(r'\s{3,}')
+date_format = '%d.%m.%Y'
+
+
+def get_correct_day(day):
+    offset = dt.datetime.today() + dt.timedelta(days=2)
+    return rrule(WEEKLY, count=1, byweekday=day, dtstart=offset)[0]
 
 
 def track(user, message):
@@ -118,7 +125,7 @@ def group_required(rollback):
 
 def from_string(date, group, flag):
     try:
-        current_date = dt.datetime.strptime(date, '%d.%m.%Y')
+        current_date = dt.datetime.strptime(date, date_format)
         verbose_day = calendar.day_name[current_date.weekday()]
         return parse(date, verbose_day, group, flag)
     except ValueError:
@@ -142,6 +149,25 @@ def cached(func):
     return wrapper
 
 
+def extract_result_from_redis(key, func, *args):
+    from_cache = redis_storage.get(key)
+    if not from_cache:
+        result = func(*args)
+        if result != service_unavailable:
+            ttl = get_cache_time()
+            redis_storage.set(key, result, ex=ttl)
+        return result
+    return from_cache.decode()
+
+
+def weekday_cache(func):
+    @wraps(func)
+    def wrapper(date, group, flag):
+        key = f'schedule::{date.strftime(date_format)}::{group}::{flag}'
+        return extract_result_from_redis(key, func, date, group, flag)
+    return wrapper
+
+
 def read_timeout_rollback(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -149,14 +175,20 @@ def read_timeout_rollback(func):
             return func(*args, **kwargs)
         except requests.exceptions.RequestException:
             return service_unavailable
+
     return wrapper
+
+
+@weekday_cache
+def week_day_schedule(date, group, flag):
+    return parse(date.strftime(date_format), calendar.day_name[date.weekday()], group, flag)
 
 
 @cached
 def get_schedule(day, group, bot=None, user=None, flag=None):
     current_date = dt.datetime.date(dt.datetime.now(TIME_ZONE))
     current_date += dt.timedelta(days=DAYS[day])
-    return parse(current_date.strftime('%d.%m.%Y'), calendar.day_name[current_date.weekday()], group, flag)
+    return parse(current_date.strftime(date_format), calendar.day_name[current_date.weekday()], group, flag)
 
 
 def get_raw_content(date, group):

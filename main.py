@@ -211,6 +211,26 @@ def send_schedule(message, user, group):
     utils.track(user, 'Get schedule')
 
 
+@bot.callback_query_handler(func=lambda call: call.data.startswith('weekday'))
+@utils.limit_requests
+@utils.in_thread
+@utils.group_required(wait_for_group)
+def handle_weekday(call, user, group):
+    day = call.data.split('_')[1]
+    extended_flag = Student.get_extend_flag(user)
+    keyboard = InlineKeyboardMarkup()
+    keyboard.add(InlineKeyboardButton(text='Назад', callback_data='back_weekdays'))
+    bot.edit_message_text(chat_id=user, message_id=call.message.message_id,
+                          text=utils.week_day_schedule(utils.get_correct_day(int(day)), group, extended_flag),
+                          parse_mode='Markdown', reply_markup=keyboard)
+
+
+@bot.callback_query_handler(func=lambda call: call.data == 'back_weekdays')
+def back_to_weekdays(call):
+    bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
+                          text='Дні тижня:', reply_markup=build_weekdays_buttons())
+
+
 @bot.message_handler(commands=['date'])
 @utils.throttle()
 @utils.limit_requests
@@ -234,10 +254,25 @@ def send_tip(message):
     bot.reply_to(message, text=utils.tip_message)
 
 
+def build_weekdays_buttons():
+    keyboard = InlineKeyboardMarkup(row_width=2)
+    buttons = [InlineKeyboardButton(text=name, callback_data=f'weekday_{call}')
+               for call, name in enumerate(utils.DAY_NAMES)]
+    buttons.append(InlineKeyboardButton(text='Закрити', callback_data='close'))
+    keyboard.add(*buttons)
+    return keyboard
+
+
+@bot.message_handler(regexp='Дні тижня')
+@utils.throttle()
+def weekdays(message):
+    bot.send_message(message.chat.id, text='Дні тижня:', reply_markup=build_weekdays_buttons())
+
+
 def send_buttons(message):
     markup = ReplyKeyboardMarkup(resize_keyboard=True)
     markup.add(*utils.DAYS)
-    markup.add('Вказати конкретну дату')
+    markup.add('Вказати конкретну дату', 'Дні тижня')
     bot.send_message(message.from_user.id, text='Меню', reply_markup=markup)
 
 
