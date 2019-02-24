@@ -220,6 +220,7 @@ def handle_weekday(call, user, group):
     extended_flag = Student.get_extend_flag(user)
     keyboard = InlineKeyboardMarkup()
     keyboard.add(InlineKeyboardButton(text='Назад', callback_data='back_weekdays'))
+    bot.answer_callback_query(call.id, text='Зачекайте...')
     bot.edit_message_text(chat_id=user, message_id=call.message.message_id,
                           text=utils.week_day_schedule(utils.get_correct_day(int(day)), group, extended_flag),
                           parse_mode='Markdown', reply_markup=keyboard)
