@@ -80,16 +80,19 @@ def in_thread(func):
     return decorator
 
 
-def limit_requests(func):
-    @wraps(func)
-    def decorator(message):
-        user_id = message.from_user.id
-        user_request_count = get_requests_count(user_id)
-        if user_request_count < REQUESTS_LIMIT_PER_DAY:
-            redis_storage.set(f'limit::{user_id}', int(user_request_count) + 1, ex=get_ttl())
-            return func(message)
-        track(user_id, 'Reached requests limit')
-
+def limit_requests(callback=None):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(message):
+            user_id = message.from_user.id
+            user_request_count = get_requests_count(user_id)
+            if user_request_count < REQUESTS_LIMIT_PER_DAY:
+                redis_storage.set(f'limit::{user_id}', int(user_request_count) + 1, ex=get_ttl())
+                return func(message)
+            track(user_id, 'Reached requests limit')
+            if callback:
+                return callback(message)
+        return wrapper
     return decorator
 
 
@@ -165,6 +168,7 @@ def weekday_cache(func):
     def wrapper(date, group, flag):
         key = f'schedule::{date.strftime(date_format)}::{group}::{flag}'
         return extract_result_from_redis(key, func, date, group, flag)
+
     return wrapper
 
 

@@ -201,7 +201,7 @@ def get_stats(message):
 
 @bot.message_handler(func=lambda m: m.text in utils.DAYS)
 @utils.throttle()
-@utils.limit_requests
+@utils.limit_requests()
 @utils.in_thread
 @utils.group_required(wait_for_group)
 def send_schedule(message, user, group):
@@ -211,8 +211,14 @@ def send_schedule(message, user, group):
     utils.track(user, 'Get schedule')
 
 
+def reached_limit_alert(callback):
+    if not utils.redis_storage.get(f'alert::{callback.from_user.id}'):
+        bot.answer_callback_query(callback.id, text='Ви вичерпали ліміт запитів на сьогодні', show_alert=True)
+        utils.redis_storage.set(f'alert::{callback.from_user.id}', True, ex=utils.get_ttl())
+
+
 @bot.callback_query_handler(func=lambda call: call.data.startswith('weekday'))
-@utils.limit_requests
+@utils.limit_requests(reached_limit_alert)
 @utils.in_thread
 @utils.group_required(wait_for_group)
 def handle_weekday(call, user, group):
@@ -220,7 +226,6 @@ def handle_weekday(call, user, group):
     extended_flag = Student.get_extend_flag(user)
     keyboard = InlineKeyboardMarkup()
     keyboard.add(InlineKeyboardButton(text='Назад', callback_data='back_weekdays'))
-    bot.answer_callback_query(call.id, text='Зачекайте...')
     bot.edit_message_text(chat_id=user, message_id=call.message.message_id,
                           text=utils.week_day_schedule(utils.get_correct_day(int(day)), group, extended_flag),
                           parse_mode='Markdown', reply_markup=keyboard)
@@ -234,7 +239,7 @@ def back_to_weekdays(call):
 
 @bot.message_handler(commands=['date'])
 @utils.throttle()
-@utils.limit_requests
+@utils.limit_requests()
 @utils.in_thread
 @utils.group_required(wait_for_group)
 def certain_date(message, user, group):
