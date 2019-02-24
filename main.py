@@ -212,9 +212,8 @@ def send_schedule(message, user, group):
 
 
 def reached_limit_alert(callback):
-    if not utils.redis_storage.get(f'alert::{callback.from_user.id}'):
-        bot.answer_callback_query(callback.id, text='Ви вичерпали ліміт запитів на сьогодні', show_alert=True)
-        utils.redis_storage.set(f'alert::{callback.from_user.id}', True, ex=utils.get_ttl())
+    bot.edit_message_text(chat_id=callback.message.chat.id, message_id=callback.message.message_id,
+                          text='Ви вичерпали ліміт запитів на сьогодні.')
 
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('weekday'))

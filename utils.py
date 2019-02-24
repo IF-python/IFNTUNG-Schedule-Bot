@@ -92,7 +92,9 @@ def limit_requests(callback=None):
             track(user_id, 'Reached requests limit')
             if callback:
                 return callback(message)
+
         return wrapper
+
     return decorator
 
 
