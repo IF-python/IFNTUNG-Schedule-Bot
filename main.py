@@ -190,6 +190,10 @@ def greeting(message, *args):
     return send_buttons(message)
 
 
+def reached_requests_limit_markup(message):
+    bot.send_message(chat_id=message.chat.id, text='Ви вичерпали ліміт запитів на сьогодні.')
+
+
 @bot.message_handler(commands=['info'])
 @utils.throttle()
 def get_stats(message):
@@ -201,7 +205,7 @@ def get_stats(message):
 
 @bot.message_handler(func=lambda m: m.text in utils.DAYS)
 @utils.throttle()
-@utils.limit_requests()
+@utils.limit_requests(reached_requests_limit_markup)
 @utils.in_thread
 @utils.group_required(wait_for_group)
 def send_schedule(message, user, group):
@@ -238,7 +242,7 @@ def back_to_weekdays(call):
 
 @bot.message_handler(commands=['date'])
 @utils.throttle()
-@utils.limit_requests()
+@utils.limit_requests(reached_requests_limit_markup)
 @utils.in_thread
 @utils.group_required(wait_for_group)
 def certain_date(message, user, group):
