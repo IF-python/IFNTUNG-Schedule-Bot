@@ -232,6 +232,7 @@ def handle_weekday(call, user, group):
     bot.edit_message_text(chat_id=user, message_id=call.message.message_id,
                           text=utils.week_day_schedule(utils.get_correct_day(int(day)), group, extended_flag),
                           parse_mode='Markdown', reply_markup=keyboard)
+    utils.track(user, 'Weekday schedule')
 
 
 @bot.callback_query_handler(func=lambda call: call.data == 'back_weekdays')
