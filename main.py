@@ -42,20 +42,18 @@ def handle_dispatch(message):
 
 
 def run_dispatch(message, content):
-    receivers = 1
+    receivers = 0
     dispatch_format = '{}/{}'
     users = Student.select()
-    users_count = len(users)
-    response = bot.send_message(message.chat.id, text=dispatch_format.format(0, users_count))
-    action = functools.partial(bot.edit_message_text, chat_id=response.chat.id, message_id=response.message_id)
+    bot.send_message(message.chat.id, text='Run dispatch')
     for user in users:
-        with contextlib.suppress(ApiException):
-            if receivers % 100 == 0:
-                action(text=dispatch_format.format(receivers, users_count))
+        try:
             bot.send_message(user.student_id, text=content, parse_mode='Markdown')
             receivers += 1
+        except ApiException as e:
+            print(e)
         time.sleep(.3)
-    action(text=dispatch_format.format(receivers, users_count) + 'Done')
+    bot.send_message(message.chat.id, text=dispatch_format.format(receivers, len(users)) + ' Done')
 
 
 def get_cancel_button():
