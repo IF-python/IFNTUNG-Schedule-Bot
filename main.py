@@ -42,7 +42,7 @@ def handle_dispatch(message):
 
 
 def run_dispatch(message, content):
-    receivers = 0
+    receivers = 1
     dispatch_format = '{}/{}'
     users = Student.select()
     users_count = len(users)
@@ -106,8 +106,8 @@ def create_notify_keyboard(user):
 
 def create_time_buttons():
     keyboard = InlineKeyboardMarkup()
-    keyboard.add(*[InlineKeyboardButton(text=time, callback_data=f'time_{time}')
-                   for time in DEFAULT_TIME_SET])
+    keyboard.add(*[InlineKeyboardButton(text=_time, callback_data=f'time_{_time}')
+                   for _time in DEFAULT_TIME_SET])
     keyboard.add(InlineKeyboardButton(text='Назад', callback_data='back'),
                  InlineKeyboardButton(text='Відміна', callback_data='cancel'))
     return keyboard
