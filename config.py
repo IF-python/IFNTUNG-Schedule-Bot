@@ -18,3 +18,4 @@ redis_storage = redis.from_url(os.environ.get('REDIS_URL'))
 FLAG_MESSAGE = 'Військова підготовка'
 DEFAULT_TIME_SET = ['6:00', '6:15', '6:30', '6:45', '7:00', '7:15', '7:30', '7:45', '8:00']
 DAY_NAMES = ['Понеділок', 'Вівторок', 'Середа', 'Четвер', 'П\"ятниця']
+ADMIN_ID = 282213187

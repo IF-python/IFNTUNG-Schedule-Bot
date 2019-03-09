@@ -1,10 +1,13 @@
+import contextlib
 import os
+import time
 from difflib import get_close_matches
 
 from telebot import TeleBot
+from telebot.apihelper import ApiException
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 from telebot.types import ReplyKeyboardMarkup, ReplyKeyboardRemove
-
+import functools
 import utils
 from config import DEFAULT_TIME_SET
 from models import Group, Student
@@ -27,6 +30,32 @@ def handle_group(message):
         bot.send_message(user, text=utils.set_group_message.format(group_full, group))
         return send_buttons(message)
     return suggest(message, group, all_groups)
+
+
+@bot.message_handler(commands=['dispatch'], func=lambda m: m.from_user.id == utils.ADMIN_ID)
+@utils.in_thread
+def handle_dispatch(message):
+    data = message.text.split(maxsplit=1)
+    if len(data) != 2:
+        return bot.send_message(message.chat.id, text='Incorrect input.')
+    return run_dispatch(message, data[1])
+
+
+def run_dispatch(message, content):
+    receivers = 0
+    dispatch_format = '{}/{}'
+    users = Student.select()
+    users_count = len(users)
+    response = bot.send_message(message.chat.id, text=dispatch_format.format(0, users_count))
+    action = functools.partial(bot.edit_message_text, chat_id=response.chat.id, message_id=response.message_id)
+    for user in users:
+        if receivers % 100 == 0:
+            action(text=dispatch_format.format(receivers, users_count))
+        with contextlib.suppress(ApiException):
+            bot.send_message(user.student_id, text=content, parse_mode='Markdown')
+            receivers += 1
+        time.sleep(.1)
+    action(text=dispatch_format.format(receivers, users_count) + 'Done')
 
 
 def get_cancel_button():
