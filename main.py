@@ -54,7 +54,7 @@ def run_dispatch(message, content):
                 action(text=dispatch_format.format(receivers, users_count))
             bot.send_message(user.student_id, text=content, parse_mode='Markdown')
             receivers += 1
-        time.sleep(.1)
+        time.sleep(.3)
     action(text=dispatch_format.format(receivers, users_count) + 'Done')
 
 
