@@ -49,9 +49,9 @@ def run_dispatch(message, content):
     response = bot.send_message(message.chat.id, text=dispatch_format.format(0, users_count))
     action = functools.partial(bot.edit_message_text, chat_id=response.chat.id, message_id=response.message_id)
     for user in users:
-        if receivers % 100 == 0:
-            action(text=dispatch_format.format(receivers, users_count))
         with contextlib.suppress(ApiException):
+            if receivers % 100 == 0:
+                action(text=dispatch_format.format(receivers, users_count))
             bot.send_message(user.student_id, text=content, parse_mode='Markdown')
             receivers += 1
         time.sleep(.1)
