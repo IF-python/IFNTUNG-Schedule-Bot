@@ -2,6 +2,7 @@ import calendar
 import datetime as dt
 import json
 import logging
+import telebot
 import re
 import threading
 from collections import namedtuple
@@ -16,9 +17,8 @@ import models
 from config import *
 from templates import *
 
-logging.basicConfig(format=u'%(filename)s[LINE:%(lineno)d]# %(levelname)-2s [%(asctime)s] %(message)s',
-                    level=logging.INFO)
-logger = logging.getLogger('worker')  # TODO fix this shit
+logger = telebot.logger
+telebot.logger.setLevel(logging.INFO)
 lesson = namedtuple('lesson', ['from_time', 'to_time', 'rest', 'num'])
 filtered = namedtuple('Filtered', ['index', 'rest', 'data'])
 xpath = '//*[@id="wrap"]/div/div/div/div[3]/div[1]/div[1]/table'
