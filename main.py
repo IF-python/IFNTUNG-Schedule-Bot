@@ -1,4 +1,4 @@
-import contextlib
+import functools
 import os
 import time
 from difflib import get_close_matches
@@ -7,7 +7,7 @@ from telebot import TeleBot
 from telebot.apihelper import ApiException
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 from telebot.types import ReplyKeyboardMarkup, ReplyKeyboardRemove
-import functools
+
 import utils
 from config import DEFAULT_TIME_SET
 from models import Group, Student
@@ -43,17 +43,27 @@ def handle_dispatch(message):
 
 def run_dispatch(message, content):
     receivers = 0
-    dispatch_format = '{}/{}'
+    dispatch_format = '*Run dispatch*\n`{}/{}`'
     users = Student.select()
-    bot.send_message(message.chat.id, text='Run dispatch')
+    response = bot.send_message(message.chat.id,
+                                text=dispatch_format.format(receivers, len(users)),
+                                parse_mode='Markdown')
+    progress = functools.partial(bot.edit_message_text,
+                                 chat_id=response.chat.id,
+                                 message_id=response.message_id,
+                                 parse_mode='Markdown')
+    dispatch = functools.partial(bot.send_message, text=content, parse_mode='Markdown')
+
     for user in users:
         try:
-            bot.send_message(user.student_id, text=content, parse_mode='Markdown')
+            dispatch(user.student_id)
             receivers += 1
+            if not receivers % 100:
+                progress(text=dispatch_format.format(receivers, len(users)))
         except ApiException as e:
             print(e)
-        time.sleep(.3)
-    bot.send_message(message.chat.id, text=dispatch_format.format(receivers, len(users)) + ' Done')
+        time.sleep(.4)
+    progress(text=dispatch_format.format(receivers, len(users)) + '\n*Successful*')
 
 
 def get_cancel_button():
