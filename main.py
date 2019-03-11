@@ -227,6 +227,11 @@ def greeting(message, *args):
     return send_buttons(message)
 
 
+@bot.message_handler(commands=['suggest'])
+def suggest_future(message):
+    raise NotImplementedError
+
+
 def reached_requests_limit_markup(message):
     bot.send_message(chat_id=message.chat.id, text='Ви вичерпали ліміт запитів на сьогодні.')
 
