@@ -29,12 +29,12 @@ date_format = '%d.%m.%Y'
 
 def get_or_create_group(group_name):
     all_groups = get_cached_groups()
-    if group_name.upper() not in all_groups:
+    if group_name not in all_groups:
         return add_runtime_group(group_name)
 
 
 def add_runtime_group(group_name):
-    response = requests.get(GROUPS_API.format(group=group_name.upper))
+    response = requests.get(GROUPS_API.format(group=group_name))
     if response.status_code == 200:
         logger.info(f"Group: {group_name} was added dynamically.")
         data = response.json()
@@ -42,7 +42,7 @@ def add_runtime_group(group_name):
         return models.Group.create(
             group_code=data["group"], verbose_name=data["department"]
         )
-    logger.warning(f"Group: {group_name} does not exists.")
+    logger.warning(f"Group: {group_name} does not exists. Response code: {response.status_code}")
 
 
 def get_correct_day(day):
