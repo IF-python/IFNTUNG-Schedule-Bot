@@ -3,7 +3,7 @@ group_not_found = 'Групу не знайдено, спробуйте знов
 info_message = '''
 Users: {}\nSource code: [click](https://github.com/P-Alban/IFNTUNG-Schedule-Bot)
 [Schedule API](https://www.ifntung-api.com/apidocs/)\n
-_Ви можете відправляти 40 запитів розкладу на добу але не частіше ніж раз в 2 секунди._\n
+_Ви можете відправляти 40 запитів розкладу на добу але не частіше ніж раз в 3 секунди._\n
 *У вас залишилось {}/40 запитів на сьогодні.*
 
 /get - Показати мою групу
