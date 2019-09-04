@@ -36,11 +36,13 @@ def get_or_create_group(group_name):
 def add_runtime_group(group_name):
     response = requests.get(GROUPS_API.format(group=group_name.upper))
     if response.status_code == 200:
+        logger.info(f"Group: {group_name} was added dynamically.")
         data = response.json()
         redis_storage.delete("groups")
         return models.Group.create(
             group_code=data["group"], verbose_name=data["department"]
         )
+    logger.warning(f"Group: {group_name} does not exists.")
 
 
 def get_correct_day(day):
