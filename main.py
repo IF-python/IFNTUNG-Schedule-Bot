@@ -22,14 +22,13 @@ bot = TeleBot(token)
 def handle_group(message):
     user = message.from_user.id
     group = message.text.upper()
-    all_groups = utils.get_cached_groups()
-    if group.upper() in all_groups:
+    if utils.get_or_create_group(group):
         utils.redis_storage.delete(user)
         Student.set_group(group_code=group, student_id=user)
         group_full = Group.get_group_full_name(group)
         bot.send_message(user, text=utils.set_group_message.format(group_full, group))
         return send_buttons(message)
-    return suggest(message, group, all_groups)
+    return suggest(message, group, utils.get_cached_groups())
 
 
 @bot.message_handler(commands=['dispatch'], func=lambda m: m.from_user.id == utils.ADMIN_ID)
