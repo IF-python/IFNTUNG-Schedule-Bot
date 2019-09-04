@@ -29,8 +29,7 @@ date_format = '%d.%m.%Y'
 
 def get_or_create_group(group_name):
     all_groups = get_cached_groups()
-    if group_name not in all_groups:
-        return add_runtime_group(group_name)
+    return add_runtime_group(group_name) if group_name not in all_groups else True
 
 
 def add_runtime_group(group_name):
