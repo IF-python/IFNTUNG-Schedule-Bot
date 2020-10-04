@@ -12,7 +12,7 @@ down:
 
 deploy:
 	make down
-	make build
+    make build
 	make run-prod
 
 logs:
