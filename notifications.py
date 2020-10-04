@@ -2,19 +2,19 @@ import datetime
 import os
 from time import sleep
 
+import peewee
 from celery import Celery
 from celery.schedules import crontab
 from celery.signals import worker_process_init
-from playhouse.db_url import connect
 from telebot.apihelper import ApiException
 
-from config import TIME_ZONE
+from config import TIME_ZONE, redis_storage
 from main import bot
 from models import Student, database_proxy
 from utils import get_schedule
 
 prefix = '*Розклад на завтра.*\n'
-app = Celery('notifications', broker=os.environ.get('REDIS_URL'))
+app = Celery('notifications', broker='redis://bot_redis:6379/0')
 app.conf.timezone = 'Europe/Kiev'
 app.conf.beat_schedule = {
     'notify_every_week_day': {
@@ -26,7 +26,10 @@ app.conf.beat_schedule = {
 
 @worker_process_init.connect
 def init_db_connection(*args, **kwargs):
-    db = connect(os.environ.get('DATABASE_URL'))
+    db = peewee.PostgresqlDatabase(
+        'postgres', user='postgres', password=os.getenv("POSTGRES_PASSWORD"),
+        host='bot_postgres', port=5432
+    )
     database_proxy.initialize(db)
 
 

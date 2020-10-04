@@ -1,0 +1,70 @@
+version: '3'
+
+services:
+  bot:
+    networks:
+      - bot
+    depends_on:
+      - bot_postgres
+      - bot_redis
+    command: python app.py
+    environment:
+      - POSTGRES_PASSWORD
+      - POSTGRES_USER
+      - POSTGRES_DB
+      - REDIS_PASSWORD
+      - SCHEDULE_URL
+      - BOT_TOKEN
+      - MIX_TOKEN
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/app/
+    tty: true
+
+  bot_celery:
+    command: celery -B -A notifications worker  --concurrency=2 -l debug
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - bot
+    environment:
+      - POSTGRES_PASSWORD
+      - BOT_TOKEN
+    depends_on:
+      - bot_postgres
+      - bot_redis
+
+  bot_postgres:
+    command: postgres
+    image: postgres:12
+    networks:
+      - bot
+    environment:
+      - POSTGRES_PASSWORD
+      - POSTGRES_USER
+      - POSTGRES_DB
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+      - pg-data:/backups
+
+  bot_redis:
+    image: library/redis:6.0.6
+    command: redis-server
+    networks:
+      - bot
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+      - redis-data:/data/
+
+networks:
+  bot:
+
+volumes:
+  pg-data:
+  redis-data:

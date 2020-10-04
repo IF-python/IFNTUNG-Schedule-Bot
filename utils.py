@@ -21,7 +21,7 @@ logger = telebot.logger
 telebot.logger.setLevel(logging.INFO)
 lesson = namedtuple('lesson', ['from_time', 'to_time', 'rest', 'num'])
 filtered = namedtuple('Filtered', ['index', 'rest', 'data'])
-xpath = '//*[@id="wrap"]/div/div/div/div[3]/div[1]/div[1]/table'
+xpath = '//*[@id="wrap"]/div/div/div/div[4]/div[2]/div[1]/table'
 s_time, e_time, rest = slice(1, 6), slice(6, 11), slice(11, None)
 pattern = re.compile(r'\s{3,}')
 date_format = '%d.%m.%Y'
@@ -258,8 +258,17 @@ def collect_tuples(data, date, verbose_day, flag):
     filter_function = switcher(flag)
     for element in filter_function(data):
         if len(element.data) > TIMESTAMP_LENGTH:
-            result.append(lesson(element.data[s_time], element.data[e_time], pattern.sub('\n', element.rest),
-                                 element.index))
+            text = pattern.sub('\n', element.rest)
+            if "дистанційно" in text:
+                text = text.replace("дистанційно", "Дистанційно\n")
+            result.append(
+                lesson(
+                    element.data[s_time],
+                    element.data[e_time],
+                    text,
+                    element.index
+                )
+            )
     return make_response(result, date, len(result), verbose_day)
 
 

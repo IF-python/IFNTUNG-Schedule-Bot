@@ -1,12 +1,14 @@
 import os
 
 import peewee
-from playhouse.db_url import connect
 
 import utils
 
+db = peewee.PostgresqlDatabase(
+    'postgres', user='postgres', password=os.getenv("POSTGRES_PASSWORD"),
+    host='bot_postgres', port=5432
+)
 database_proxy = peewee.Proxy()
-db = connect(os.environ.get('DATABASE_URL'))
 database_proxy.initialize(db)
 
 
