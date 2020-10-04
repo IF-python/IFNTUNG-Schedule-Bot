@@ -24,7 +24,6 @@ filtered = namedtuple("Filtered", ["index", "rest", "data"])
 xpath = '//*[@id="wrap"]/div/div/div/div[4]/div[2]/div[1]/table'
 s_time, e_time, rest = slice(1, 6), slice(6, 11), slice(11, None)
 pattern = re.compile(r"\s{3,}")
-MARKDOWN_QUOTE_PATTERN = re.compile(r"([_*\[\]()~`>#+\-|{}.!])")
 date_format = "%d.%m.%Y"
 
 
@@ -284,8 +283,6 @@ def make_response(data, date, count, verbose_day):
     response = "".join(
         [response_format.format(x.num, x.from_time, x.to_time, x.rest) for x in data]
     )
-    return re.sub(
-        pattern=MARKDOWN_QUOTE_PATTERN, string=pretty_format.format(
-            date, count, verbose_day, response.replace("`", '"')
-        ), repl=r"\\\1"
+    return pretty_format.format(
+        date, count, verbose_day, response.replace("`", '"')
     )  # prevent markdown error
