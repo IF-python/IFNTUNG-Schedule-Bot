@@ -16,4 +16,4 @@ deploy:
 	make run-prod
 
 logs:
-    sh -c "docker logs -f schedule-bot"
+    sh -c "docker logs -f schedule_bot"
