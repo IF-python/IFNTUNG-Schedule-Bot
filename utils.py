@@ -19,12 +19,12 @@ from templates import *
 
 logger = telebot.logger
 telebot.logger.setLevel(logging.INFO)
-lesson = namedtuple('lesson', ['from_time', 'to_time', 'rest', 'num'])
-filtered = namedtuple('Filtered', ['index', 'rest', 'data'])
+lesson = namedtuple("lesson", ["from_time", "to_time", "rest", "num"])
+filtered = namedtuple("Filtered", ["index", "rest", "data"])
 xpath = '//*[@id="wrap"]/div/div/div/div[4]/div[2]/div[1]/table'
 s_time, e_time, rest = slice(1, 6), slice(6, 11), slice(11, None)
-pattern = re.compile(r'\s{3,}')
-date_format = '%d.%m.%Y'
+pattern = re.compile(r"\s{3,}")
+date_format = "%d.%m.%Y"
 
 
 def get_or_create_group(group_name):
@@ -41,7 +41,9 @@ def add_runtime_group(group_name):
         return models.Group.create(
             group_code=group_name, verbose_name=data["department"]
         )
-    logger.warning(f"Group: {group_name} does not exists. Response code: {response.status_code}")
+    logger.warning(
+        f"Group: {group_name} does not exists. Response code: {response.status_code}"
+    )
 
 
 def get_correct_day(day):
@@ -53,21 +55,21 @@ def track(user, message):
     try:
         mp.track(str(user), message)
     except MixpanelException:
-        logger.error('Mix panel track failed')
+        logger.error("Mix panel track failed")
 
 
 def validate_time(time):
     try:
-        return dt.datetime.strptime(time, '%H:%M')
+        return dt.datetime.strptime(time, "%H:%M")
     except ValueError:
         return False
 
 
 def get_cached_groups():
-    groups = redis_storage.get('groups')
+    groups = redis_storage.get("groups")
     if not groups:
         g = models.Group.get_all_groups()
-        redis_storage.set('groups', json.dumps(g))
+        redis_storage.set("groups", json.dumps(g))
         return g
     return json.loads(groups)
 
@@ -84,7 +86,7 @@ def get_cache_time():
 
 
 def get_requests_count(user_id):
-    requests_count = redis_storage.get(f'limit::{user_id}')
+    requests_count = redis_storage.get(f"limit::{user_id}")
     return int(requests_count) if requests_count else 0
 
 
@@ -104,9 +106,11 @@ def limit_requests(callback=None):
             user_id = message.from_user.id
             user_request_count = get_requests_count(user_id)
             if user_request_count < REQUESTS_LIMIT_PER_DAY:
-                redis_storage.set(f'limit::{user_id}', int(user_request_count) + 1, ex=get_ttl())
+                redis_storage.set(
+                    f"limit::{user_id}", int(user_request_count) + 1, ex=get_ttl()
+                )
                 return func(message)
-            track(user_id, 'Reached requests limit')
+            track(user_id, "Reached requests limit")
             if callback:
                 return callback(message)
 
@@ -120,10 +124,12 @@ def throttle(time=THROTTLE_TIME):
         @wraps(func)
         def wrapper(message):
             user_id = message.from_user.id
-            throttle_value = redis_storage.set(f'throttle::{user_id}', True, ex=time, nx=True)
+            throttle_value = redis_storage.set(
+                f"throttle::{user_id}", True, ex=time, nx=True
+            )
             if throttle_value:
                 return func(message)
-            track(user_id, 'Throttle')
+            track(user_id, "Throttle")
 
         return wrapper
 
@@ -151,20 +157,21 @@ def from_string(date, group, flag):
         verbose_day = calendar.day_name[current_date.weekday()]
         return parse(date, verbose_day, group, flag)
     except ValueError:
-        return 'Хибний формат дати.'
+        return "Хибний формат дати."
 
 
 def cached(func):
     @wraps(func)
     def wrapper(day, group, bot, user, extended_flag):
-        from_cache = redis_storage.get(f'schedule::{day}::{extended_flag}::{group}')
+        from_cache = redis_storage.get(f"schedule::{day}::{extended_flag}::{group}")
         if not from_cache:
-            bot.send_chat_action(user, 'typing')
+            bot.send_chat_action(user, "typing")
             result = func(day, group, flag=extended_flag)
             if result != service_unavailable:
                 ttl = get_cache_time()
-                redis_storage.set(f'schedule::{day}::{extended_flag}::{group}',
-                                  result, ex=ttl)
+                redis_storage.set(
+                    f"schedule::{day}::{extended_flag}::{group}", result, ex=ttl
+                )
             return result
         return from_cache.decode()
 
@@ -185,7 +192,7 @@ def extract_result_from_redis(key, func, *args):
 def weekday_cache(func):
     @wraps(func)
     def wrapper(date, group, flag):
-        key = f'schedule::{date.strftime(date_format)}::{group}::{flag}'
+        key = f"schedule::{date.strftime(date_format)}::{group}::{flag}"
         return extract_result_from_redis(key, func, date, group, flag)
 
     return wrapper
@@ -204,22 +211,25 @@ def read_timeout_rollback(func):
 
 @weekday_cache
 def week_day_schedule(date, group, flag):
-    return parse(date.strftime(date_format), calendar.day_name[date.weekday()], group, flag)
+    return parse(
+        date.strftime(date_format), calendar.day_name[date.weekday()], group, flag
+    )
 
 
 @cached
 def get_schedule(day, group, bot=None, user=None, flag=None):
     current_date = dt.datetime.date(dt.datetime.now(TIME_ZONE))
     current_date += dt.timedelta(days=DAYS[day])
-    return parse(current_date.strftime(date_format), calendar.day_name[current_date.weekday()], group, flag)
+    return parse(
+        current_date.strftime(date_format),
+        calendar.day_name[current_date.weekday()],
+        group,
+        flag,
+    )
 
 
 def get_raw_content(date, group):
-    payload = {
-        'group': group.encode(DEFAULT_ENCODING),
-        'edate': date,
-        'sdate': date
-    }
+    payload = {"group": group.encode(DEFAULT_ENCODING), "edate": date, "sdate": date}
     response = requests.post(URL, data=payload)
     response.encoding = DEFAULT_ENCODING
     return response.text
@@ -245,7 +255,7 @@ def without_extended_flag(data):
         raw = element[rest]
         if raw.strip() != FLAG_MESSAGE:
             if FLAG_MESSAGE in raw:
-                raw = raw.replace(FLAG_MESSAGE, '')
+                raw = raw.replace(FLAG_MESSAGE, "")
             yield filtered(index, raw, element)
 
 
@@ -258,16 +268,11 @@ def collect_tuples(data, date, verbose_day, flag):
     filter_function = switcher(flag)
     for element in filter_function(data):
         if len(element.data) > TIMESTAMP_LENGTH:
-            text = pattern.sub('\n', element.rest)
+            text = pattern.sub("\n", element.rest)
             if "дистанційно" in text:
                 text = text.replace("дистанційно", "Дистанційно\n")
             result.append(
-                lesson(
-                    element.data[s_time],
-                    element.data[e_time],
-                    text,
-                    element.index
-                )
+                lesson(element.data[s_time], element.data[e_time], text, element.index)
             )
     return make_response(result, date, len(result), verbose_day)
 
@@ -275,5 +280,9 @@ def collect_tuples(data, date, verbose_day, flag):
 def make_response(data, date, count, verbose_day):
     if not data:
         return not_found
-    response = ''.join([response_format.format(x.num, x.from_time, x.to_time, x.rest) for x in data])
-    return pretty_format.format(date, count, verbose_day, response.replace('`', '"'))  # prevent markdown error
+    response = "".join(
+        [response_format.format(x.num, x.from_time, x.to_time, x.rest) for x in data]
+    )
+    return pretty_format.format(
+        date, count, verbose_day, response.replace("`", '"')
+    )  # prevent markdown error

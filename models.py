@@ -5,8 +5,11 @@ import peewee
 import utils
 
 db = peewee.PostgresqlDatabase(
-    'postgres', user='postgres', password=os.getenv("POSTGRES_PASSWORD"),
-    host='bot_postgres', port=5432
+    "postgres",
+    user="postgres",
+    password=os.getenv("POSTGRES_PASSWORD"),
+    host="bot_postgres",
+    port=5432,
 )
 database_proxy = peewee.Proxy()
 database_proxy.initialize(db)
@@ -40,7 +43,7 @@ class Group(BaseModel):
 
 class Student(BaseModel):
     student_id = peewee.IntegerField()
-    group = peewee.ForeignKeyField(Group, backref='students', null=True)
+    group = peewee.ForeignKeyField(Group, backref="students", null=True)
     extend = peewee.BooleanField(default=False)
     notify = peewee.BooleanField(default=False)
     notify_time = peewee.TimeField(null=True)
@@ -76,7 +79,7 @@ class Student(BaseModel):
     def get_student(cls, student_id):
         student, created = cls.get_or_create(student_id=student_id)
         if created:
-            utils.track(student_id, 'New student')
+            utils.track(student_id, "New student")
         return student, created
 
     @classmethod
@@ -93,7 +96,7 @@ class Student(BaseModel):
     @classmethod
     def has_group(cls, student_id):
         student, created = cls.get_student(student_id)
-        return getattr(student.group, 'group_code', None)
+        return getattr(student.group, "group_code", None)
 
     @classmethod
     def set_group(cls, group_code, student_id):
@@ -104,7 +107,7 @@ class Student(BaseModel):
     @classmethod
     def get_group_desc(cls, student_id):
         group = cls.has_group(student_id)
-        return {'code': group, 'name': Group.get_group_full_name(group)}
+        return {"code": group, "name": Group.get_group_full_name(group)}
 
 
 db.create_tables([Group, Student], safe=True)
