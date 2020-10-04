@@ -8,6 +8,7 @@ services:
       - bot_postgres
       - bot_redis
     command: python app.py
+    container_name: schedule-bot
     environment:
       - POSTGRES_PASSWORD
       - POSTGRES_USER

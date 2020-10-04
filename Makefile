@@ -14,3 +14,6 @@ deploy:
 	make down
 	make build
 	make run-prod
+
+logs:
+    sh -c "docker logs -f schedule-bot"
