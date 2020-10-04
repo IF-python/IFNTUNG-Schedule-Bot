@@ -8,7 +8,7 @@ build:
 	sh -c "docker-compose build"
 
 down:
-	sh -c "docker-compose down"
+    sh -c "docker-compose down"
 
 deploy:
 	make down
