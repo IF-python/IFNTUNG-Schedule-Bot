@@ -230,7 +230,7 @@ def get_schedule(day, group, bot=None, user=None, flag=None):
 
 def get_raw_content(date, group):
     payload = {"group": group.encode(DEFAULT_ENCODING), "edate": date, "sdate": date}
-    response = requests.post(URL, data=payload)
+    response = requests.post(URL, data=payload, timeout=1000)
     response.encoding = DEFAULT_ENCODING
     return response.text
 
