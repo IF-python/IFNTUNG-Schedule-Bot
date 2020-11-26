@@ -269,10 +269,10 @@ def collect_tuples(data, date, verbose_day, flag):
     for element in filter_function(data):
         if len(element.data) > TIMESTAMP_LENGTH:
             text = pattern.sub("\n", element.rest)
-            text = text.replace("*", "\*")
-            text = text.replace("`", "\`")
-            text = text.replace("#", "\#")
-            text = text.replace("_", "\_")
+            text = text.replace("*", r"\*")
+            text = text.replace("`", r"\`")
+            text = text.replace("#", r"\#")
+            text = text.replace("_", r"\_")
             if "дистанційно" in text:
                 text = text.replace("дистанційно", "Дистанційно\n")
             result.append(
