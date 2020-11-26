@@ -17,6 +17,7 @@ services:
       - SCHEDULE_URL
       - BOT_TOKEN
       - MIX_TOKEN
+      - SENTRY_SDK
     build:
       context: .
       dockerfile: Dockerfile
