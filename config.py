@@ -3,9 +3,8 @@ import os
 import pytz
 import redis
 import sentry_sdk
-from mixpanel import Mixpanel
 
-sentry = sentry_sdk.init(
+sentry_sdk.init(
     os.getenv("SENTRY_SDK"),
     traces_sample_rate=1.0
 )
@@ -19,7 +18,7 @@ TIMESTAMP_LENGTH = 12
 DAYS = {"Сьогодні": 0, "Завтра": 1}
 REQUESTS_LIMIT_PER_DAY = 40
 THROTTLE_TIME = 3
-mp = Mixpanel(os.environ.get("MIX_TOKEN"))
+AMPLITUDE_KEY = os.getenv("AMPLITUDE_KEY")
 redis_storage = redis.Redis(host="bot_redis", port=6379)
 FLAG_MESSAGE = "Військова підготовка"
 DEFAULT_TIME_SET = [

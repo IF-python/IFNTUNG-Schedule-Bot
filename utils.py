@@ -53,9 +53,20 @@ def get_correct_day(day):
 
 def track(user, message):
     try:
-        mp.track(str(user), message)
-    except MixpanelException:
-        logger.error("Mix panel track failed")
+        requests.post(
+            "https://api.amplitude.com/2/httpapi",
+            data={
+                "api_key": AMPLITUDE_KEY,
+                "events": [
+                    {
+                        "user_id": user,
+                        "event_type": message
+                    }
+                ]
+            }
+        )
+    except Exception:
+        logger.exception("Amplitude panel track failed")
 
 
 def validate_time(time):

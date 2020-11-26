@@ -16,8 +16,8 @@ services:
       - REDIS_PASSWORD
       - SCHEDULE_URL
       - BOT_TOKEN
-      - MIX_TOKEN
       - SENTRY_SDK
+      - AMPLITUDE_KEY
     build:
       context: .
       dockerfile: Dockerfile
