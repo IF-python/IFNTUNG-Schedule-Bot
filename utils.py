@@ -230,7 +230,7 @@ def get_schedule(day, group, bot=None, user=None, flag=None):
 
 def get_raw_content(date, group):
     payload = {"group": group.encode(DEFAULT_ENCODING), "edate": date, "sdate": date}
-    response = requests.post(URL, data=payload)
+    response = requests.post(URL, data=payload, timeout=1000)
     response.encoding = DEFAULT_ENCODING
     return response.text
 
@@ -269,6 +269,10 @@ def collect_tuples(data, date, verbose_day, flag):
     for element in filter_function(data):
         if len(element.data) > TIMESTAMP_LENGTH:
             text = pattern.sub("\n", element.rest)
+            text = text.replace("*", "\*")
+            text = text.replace("`", "\`")
+            text = text.replace("#", "\#")
+            text = text.replace("_", "\_")
             if "дистанційно" in text:
                 text = text.replace("дистанційно", "Дистанційно\n")
             result.append(
