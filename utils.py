@@ -55,7 +55,7 @@ def track(user, message):
     try:
         requests.post(
             "https://api.amplitude.com/2/httpapi",
-            data={
+            json={
                 "api_key": AMPLITUDE_KEY,
                 "events": [
                     {
