@@ -44,7 +44,7 @@ def handle_dispatch(message):
 
 def run_dispatch(message, content):
     receivers = 0
-    dispatch_format = "*Run dispatch*\n`{}/{}`"
+    dispatch_format = "<b>Run dispatch</b>\n<pre>{}/{}</pre>"
     users = Student.select()
     response = bot.send_message(
         message.chat.id,
@@ -68,7 +68,7 @@ def run_dispatch(message, content):
         except ApiException as e:
             print(e)
         time.sleep(0.4)
-    progress(text=dispatch_format.format(receivers, len(users)) + "\n*Successful*")
+    progress(text=dispatch_format.format(receivers, len(users)) + "\n<b>Successful</b>")
 
 
 def get_cancel_button():
@@ -185,7 +185,7 @@ def handle_notify_time(message):
         )
         bot.send_message(
             chat_id=user,
-            text=f"Тепер Ви будете отримувати сповіщення о *{time.time()}*.",
+            text=f"Тепер Ви будете отримувати сповіщення о <b>{time.time()}</b>.",
             parse_mode="html",
         )
         utils.redis_storage.delete(user)
@@ -198,7 +198,7 @@ def handle_default_time(call):
     Student.set_notify_time(user, time)
     bot.edit_message_text(
         chat_id=user,
-        text=f"Тепер Ви будете отримувати сповіщення о *{time}:00*.",
+        text=f"Тепер Ви будете отримувати сповіщення о <b>{time}:00</b>.",
         message_id=call.message.message_id,
         parse_mode="html",
     )
