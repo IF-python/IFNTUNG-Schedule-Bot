@@ -2,7 +2,13 @@ import os
 
 import pytz
 import redis
+import sentry_sdk
 from mixpanel import Mixpanel
+
+sentry_sdk.init(
+    os.getenv("SENTRY_SDK"),
+    traces_sample_rate=1.0
+)
 
 TIMEOUT = 10000
 CACHE_TIME = 3600 * 6  # 6 hours
