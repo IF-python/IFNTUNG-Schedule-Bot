@@ -13,7 +13,7 @@ from main import bot
 from models import Student, database_proxy
 from utils import get_schedule
 
-prefix = "*Розклад на завтра.*\n"
+prefix = "<b>Розклад на завтра.</b>\n"
 app = Celery("notifications", broker="redis://bot_redis:6379/0")
 app.conf.timezone = "Europe/Kiev"
 app.conf.beat_schedule = {
@@ -41,7 +41,7 @@ def notify(group, user_id, flag):
         bot.send_message(
             user_id,
             text=prefix + get_schedule("Завтра", group, bot, user_id, flag),
-            parse_mode="Markdown",
+            parse_mode="html",
         )
     except ApiException:
         pass

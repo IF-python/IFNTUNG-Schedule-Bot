@@ -204,6 +204,7 @@ def read_timeout_rollback(func):
         try:
             return func(*args, **kwargs)
         except requests.exceptions.RequestException:
+            logger.exception()
             return service_unavailable
 
     return wrapper
@@ -269,10 +270,6 @@ def collect_tuples(data, date, verbose_day, flag):
     for element in filter_function(data):
         if len(element.data) > TIMESTAMP_LENGTH:
             text = pattern.sub("\n", element.rest)
-            text = text.replace("*", r"\*")
-            text = text.replace("`", r"\`")
-            text = text.replace("#", r"\#")
-            text = text.replace("_", r"\_")
             if "дистанційно" in text:
                 text = text.replace("дистанційно", "Дистанційно\n")
             result.append(
@@ -288,5 +285,5 @@ def make_response(data, date, count, verbose_day):
         [response_format.format(x.num, x.from_time, x.to_time, x.rest) for x in data]
     )
     return pretty_format.format(
-        date, count, verbose_day, response.replace("`", '"')
-    )  # prevent markdown error
+        date, count, verbose_day, response
+    )

@@ -49,15 +49,15 @@ def run_dispatch(message, content):
     response = bot.send_message(
         message.chat.id,
         text=dispatch_format.format(receivers, len(users)),
-        parse_mode="Markdown",
+        parse_mode="html",
     )
     progress = functools.partial(
         bot.edit_message_text,
         chat_id=response.chat.id,
         message_id=response.message_id,
-        parse_mode="Markdown",
+        parse_mode="html",
     )
-    dispatch = functools.partial(bot.send_message, text=content, parse_mode="Markdown")
+    dispatch = functools.partial(bot.send_message, text=content, parse_mode="html")
 
     for user in users:
         try:
@@ -162,7 +162,7 @@ def make_notification_menu(message, action=bot.send_message, **kwargs):
         chat_id=user,
         text=notify_template.format(notify_time or "Не вказано"),
         reply_markup=create_notify_keyboard(user),
-        parse_mode="Markdown",
+        parse_mode="html",
         **kwargs,
     )
 
@@ -186,7 +186,7 @@ def handle_notify_time(message):
         bot.send_message(
             chat_id=user,
             text=f"Тепер Ви будете отримувати сповіщення о *{time.time()}*.",
-            parse_mode="Markdown",
+            parse_mode="html",
         )
         utils.redis_storage.delete(user)
 
@@ -200,7 +200,7 @@ def handle_default_time(call):
         chat_id=user,
         text=f"Тепер Ви будете отримувати сповіщення о *{time}:00*.",
         message_id=call.message.message_id,
-        parse_mode="Markdown",
+        parse_mode="html",
     )
     utils.redis_storage.delete(user)
 
@@ -252,7 +252,7 @@ def get_change_chair_dialog(message, *args):
         user,
         text=get_chair_status_message(user),
         reply_markup=settings_buttons(),
-        parse_mode="Markdown",
+        parse_mode="html",
     )
 
 
@@ -264,7 +264,7 @@ def reset_chair_status(call):
         chat_id=user,
         message_id=call.message.message_id,
         text=get_chair_status_message(user),
-        parse_mode="Markdown",
+        parse_mode="html",
         reply_markup=settings_buttons(),
     )
 
@@ -300,7 +300,7 @@ def get_stats(message):
     requests_count = utils.REQUESTS_LIMIT_PER_DAY - int(utils.get_requests_count(user))
     bot.send_message(
         user,
-        parse_mode="Markdown",
+        parse_mode="html",
         disable_web_page_preview=True,
         text=utils.info_message.format(len(Student.select()), requests_count),
     )
@@ -317,7 +317,7 @@ def send_schedule(message, user, group):
         user,
         text=utils.get_schedule(message.text, group, bot, user, extended_flag),
         reply_to_message_id=message.message_id,
-        parse_mode="Markdown",
+        parse_mode="html",
         disable_web_page_preview=True,
     )
     utils.track(user, "Get schedule")
@@ -346,7 +346,7 @@ def handle_weekday(call, user, group):
         text=utils.week_day_schedule(
             utils.get_correct_day(int(day)), group, extended_flag
         ),
-        parse_mode="Markdown",
+        parse_mode="html",
         reply_markup=keyboard,
         disable_web_page_preview=True,
     )
@@ -377,7 +377,7 @@ def certain_date(message, user, group):
             user,
             text=utils.from_string(splited[1], group, extended_flag),
             reply_to_message_id=message.message_id,
-            parse_mode="Markdown",
+            parse_mode="html",
             disable_web_page_preview=True,
         )
     else:

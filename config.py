@@ -5,7 +5,7 @@ import redis
 import sentry_sdk
 from mixpanel import Mixpanel
 
-sentry_sdk.init(
+sentry = sentry_sdk.init(
     os.getenv("SENTRY_SDK"),
     traces_sample_rate=1.0
 )
