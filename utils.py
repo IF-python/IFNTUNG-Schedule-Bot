@@ -209,14 +209,15 @@ def weekday_cache(func):
     return wrapper
 
 
-def read_timeout_rollback(func):
+def read_timeout_rollback(func, retries=3):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except requests.exceptions.RequestException:
-            logger.exception()
-            return service_unavailable
+        for retry in range(retries):
+            try:
+                return func(*args, **kwargs)
+            except requests.exceptions.RequestException:
+                logger.exception("Read timeout to telegram API #%s" % retry)
+        return service_unavailable
 
     return wrapper
 
