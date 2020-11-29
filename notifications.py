@@ -41,7 +41,7 @@ def notify(group, user_id, flag):
         bot.send_message(
             user_id,
             text=prefix + get_schedule("Завтра", group, bot, user_id, flag),
-            parse_mode="html",
+            parse_mode="html", disable_web_page_preview=True
         )
     except ApiException:
         pass

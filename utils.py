@@ -2,6 +2,8 @@ import calendar
 import datetime as dt
 import json
 import logging
+from time import sleep
+
 import telebot
 import re
 import threading
@@ -216,6 +218,7 @@ def read_timeout_rollback(func, retries=3):
             try:
                 return func(*args, **kwargs)
             except requests.exceptions.RequestException:
+                sleep(1)
                 logger.exception("Read timeout to telegram API #%s" % retry)
         return service_unavailable
 
