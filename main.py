@@ -3,7 +3,7 @@ import os
 import time
 from difflib import get_close_matches
 
-from telebot import TeleBot
+from telebot import TeleBot, apihelper
 from telebot.apihelper import ApiException
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 from telebot.types import ReplyKeyboardMarkup, ReplyKeyboardRemove
@@ -14,7 +14,13 @@ from models import Group, Student
 from templates import chair_info, notify_template, time_menu_template
 
 token = os.environ.get("BOT_TOKEN")
+apihelper.ENABLE_MIDDLEWARE = True
 bot = TeleBot(token)
+
+
+@bot.middleware_handler
+def track_all_requests(bot_instance, message):
+    utils.track(message.from_user.id, "Request")
 
 
 @bot.message_handler(func=lambda m: utils.redis_storage.get(m.chat.id) == b"set_group")
