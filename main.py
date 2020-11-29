@@ -15,6 +15,7 @@ from templates import chair_info, notify_template, time_menu_template
 
 token = os.environ.get("BOT_TOKEN")
 bot = TeleBot(token)
+bot.skip_pending = True
 
 
 @bot.message_handler(func=lambda m: utils.redis_storage.get(m.chat.id) == b"set_group")
