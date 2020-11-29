@@ -18,7 +18,7 @@ apihelper.ENABLE_MIDDLEWARE = True
 bot = TeleBot(token)
 
 
-@bot.middleware_handler
+@bot.middleware_handler()
 def track_all_requests(bot_instance, message):
     utils.track(message.from_user.id, "Request")
 
