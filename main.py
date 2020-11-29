@@ -18,11 +18,6 @@ apihelper.ENABLE_MIDDLEWARE = True
 bot = TeleBot(token)
 
 
-@bot.middleware_handler()
-def track_all_requests(bot_instance, message):
-    utils.track(message.from_user.id, "Request")
-
-
 @bot.message_handler(func=lambda m: utils.redis_storage.get(m.chat.id) == b"set_group")
 @utils.throttle(time=1)
 def handle_group(message):
