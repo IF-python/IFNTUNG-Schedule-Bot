@@ -15,7 +15,7 @@ itsdangerous==1.1.0
 jdcal==1.4
 Jinja2==2.10
 kombu==4.2.2.post1
-lxml==4.2.5
+lxml==4.6.3
 MarkupSafe==1.1.0
 mixpanel==4.3.2
 numpy==1.15.4
