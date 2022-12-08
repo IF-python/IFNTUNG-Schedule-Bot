@@ -3,7 +3,7 @@ beautifulsoup4==4.6.3
 billiard==3.5.0.5
 bs4==0.0.1
 celery==4.2.1
-certifi==2018.10.15
+certifi==2022.12.7
 chardet==3.0.4
 Click==7.0
 et-xmlfile==1.0.1
